@@ -1,0 +1,24 @@
+{
+  "name": "dragonrend",
+  "version": "0.1.0",
+  "description": "Node.js Web Framework",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EgorRepnikov/dragonrend.git"
+  },
+  "keywords": [
+    "web",
+    "http",
+    "router",
+    "fast",
+    "modular"
+  ],
+  "author": "Egor Repnikov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EgorRepnikov/dragonrend/issues"
+  },
+  "homepage": "https://github.com/EgorRepnikov/dragonrend#readme"
+}
