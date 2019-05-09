@@ -95,7 +95,7 @@ app.get('/get', ({ request, response }) => {
 
 http
   .createServer(app.toListener())
-  .listen(3000)
+  .listen(8080)
 ```
 
 # API
@@ -138,7 +138,7 @@ dragonrend.setErrorHandler((error, data) => {
 ```js
 http
   .createServer(dragonrend.toListener())
-  .listen(3000)
+  .listen(8080)
 ```
 
 ## Class Router
