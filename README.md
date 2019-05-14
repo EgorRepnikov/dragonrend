@@ -21,13 +21,14 @@ const { Dragonrend } = require('dragonrend')
 const app = new Dragonrend()
 
 app.get('/hello', ({ req, res }) => {
+  // Do something with 'req'
   res.writeHead(200, { 'Content-Type': 'application/json' })
   res.end(JSON.parse({ message: 'Hello World' }))
 })
 
 http
   .createServer(app.toListener())
-  .listen(8080, () => console.log('Server has been started'))
+  .listen(8080)
 ```
 
 ## Dragonrend + Own Handlers
@@ -39,7 +40,6 @@ const app = new Dragonrend()
 
 app.addHandlerBefore((data) => {
   data.request = {}
-  const { req, request } = data
   return new Promise((resolve) => {
     const { req, request } = data
     let buffer = ''
@@ -57,18 +57,18 @@ app.get('/hello', ({ request, response }) => {
   response.body = {
     request: request.body,
     message: 'Hello World'
-  } // for example
+  }
   response.status = 200
 })
 
 app.addHandlerAfter(({ res, response }) => {
-  res.writeHead(response.status, { 'Content-Type': contentType })
+  res.writeHead(response.status, { 'Content-Type': 'application/json' })
   res.end(JSON.parse(response.body))
 })
 
 http
   .createServer(app.toListener())
-  .listen(8080, () => console.log('Server has been started'))
+  .listen(8080)
 ```
 
 ## Dragonrend + Handlers from NPM
@@ -90,7 +90,7 @@ app.get('/get', ({ request, response }) => {
   response.body = {
     request: request.body,
     message: 'Hello World'
-  } // for example
+  }
 })
 
 http
@@ -100,13 +100,16 @@ http
 
 # API
 ### data
-**data** object is everywhere. This is a context that contains the request and response by default.
+`data` is a context that contains the request `(req)` and response `(res)` by default.
 
 ## Class Dragonrend
-Dragonrend **inherits** Router
+`Dragonrend` **inherits** `Router`.
 
-### addHandlerBefore
-**addHandlerBefore** adds handler which will called before Router's handler.
+### addHandlerBefore(fn)
+`addHandlerBefore` adds handler which will called before Router's handler.
+
+`fn` Type: `Function`
+
 ```js
 // async/await or return promise
 dragonrend.addHandlerBefore(async (data) => {
@@ -114,8 +117,11 @@ dragonrend.addHandlerBefore(async (data) => {
 })
 ```
 
-### addHandlerAfter
-**addHandlerAfter** adds handler which will called after Router's handler.
+### addHandlerAfter(fn)
+`addHandlerAfter` adds handler which will called after Router's handler.
+
+`fn` Type: `Function`
+
 ```js
 // async/await or return promise
 dragonrend.addHandlerAfter(async (data) => {
@@ -123,9 +129,14 @@ dragonrend.addHandlerAfter(async (data) => {
 })
 ```
 
-### setErrorHandler
-**setErrorHandler** sets error handler.
-By default Dragonrend returns status 500 and body {"error":"Internal Server Error"}
+### setErrorHandler(fn)
+`setErrorHandler` sets error handler.
+By default Dragonrend returns status 500 and body `{"error":"Internal Server Error"}`.
+
+`fn` Type: `Function`
+
+`fn` should have `(e, data)` signature. `e` is an error occurred, `data` is context.
+
 ```js
 dragonrend.setErrorHandler((error, data) => {
   data.res.writeHead(500, { 'Content-Type': 'application/json' })
@@ -134,7 +145,8 @@ dragonrend.setErrorHandler((error, data) => {
 ```
 
 ### toListener
-**toListener** returns request listener for Node's http server.
+`toListener` returns request listener for Node's http server.
+
 ```js
 http
   .createServer(dragonrend.toListener())
@@ -144,27 +156,33 @@ http
 ## Class Router
 
 ### constructor
-Constructor gets the object with a prefix, which appends to all routes of that instance of Router.
+`Constructor` gets the object with a prefix, which appends to all routes of that instance of Router.
 ```js
 new Router({ prefix: '/api' })
 ```
 
-### GET PUT PATCH POST DELETE HEAD OPTIONS
+### GET PUT PATCH POST DELETE HEAD OPTIONS (fn)
 These methods add request handlers.
+
+`fn` Type: `Function`
+
 ```js
 const router = new Router()
 
-router.get(async (data) => {
+router.get('/path', async (data) => {
   // do something
 })
 
-router.post(({ req, res }) => {
+router.post('/path', ({ req, res }) => {
   // do something
 })
 ```
 
-### merge
-Merge combines one or more instances of Router.
+### merge(..routers)
+`merge` combines one or more instances of Router.
+
+Type: Router|Array
+
 ```js
 const router1 = new Router({ prefix: '/base' })
 const router2 = new Router()
@@ -174,7 +192,8 @@ router1.merge(router2, router3)
 ```
 
 ### Instance of Router should be added to Dragonrend
-Dragonrend inherits Router, therefore it has method **merge**.
+`Dragonrend` inherits `Router`, therefore it has method `merge`.
+
 ```js
 const dragonrend = new Dragonrend()
 const router = new Router()
