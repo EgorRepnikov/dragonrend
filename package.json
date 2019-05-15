@@ -1,6 +1,6 @@
 {
   "name": "dragonrend",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Node.js Web Framework",
   "main": "index.js",
   "scripts": {},
@@ -12,8 +12,7 @@
     "web",
     "http",
     "router",
-    "fast",
-    "modular"
+    "fast"
   ],
   "author": "Egor Repnikov",
   "license": "MIT",
