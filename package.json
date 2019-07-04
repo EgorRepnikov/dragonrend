@@ -21,8 +21,6 @@
   },
   "homepage": "https://github.com/EgorRepnikov/dragonrend#readme",
   "dependencies": {
-    "fast-decode-uri-component": "^1.0.1",
-    "fast-url-parser": "^1.1.3",
-    "querystringparser": "^0.1.1"
+    "impetuous": "^0.1.0"
   }
 }
