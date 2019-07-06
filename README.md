@@ -38,10 +38,10 @@ const { Dragonrend } = require('dragonrend')
 
 const app = new Dragonrend()
 
-app.addHandlerBefore((data) => {
-  data.request = {}
+app.addHandlerBefore((ctx) => {
+  ctx.request = {}
   return new Promise((resolve) => {
-    const { req, request } = data
+    const { req, request } = ctx
     let buffer = ''
     req.on('data', (chunk) => buffer += chunk)
     req.on('end', () => {
@@ -51,7 +51,7 @@ app.addHandlerBefore((data) => {
   })
 })
 
-app.addHandlerBefore((data) => data.response = {})
+app.addHandlerBefore((ctx) => ctx.response = {})
 
 app.get('/hello', ({ request, response }) => {
   response.body = {
@@ -99,11 +99,11 @@ http
 ```
 
 # API
-### data
-`data` is a context that contains the request `(req)` and response `(res)` by default.
+### ctx
+`ctx` is a context that contains the request `req` and response `res` by default.
 
 ## Class Dragonrend
-`Dragonrend` **inherits** `Router`.
+`Dragonrend` **inherits** `Router` (`Router` inherits [Impetuous](https://github.com/EgorRepnikov/impetuous) in turn).
 
 ### addHandlerBefore(fn)
 `addHandlerBefore` adds handler which will called before Router's handler.
@@ -112,7 +112,7 @@ http
 
 ```js
 // async/await or return promise
-dragonrend.addHandlerBefore(async (data) => {
+dragonrend.addHandlerBefore(async (ctx) => {
   // do something
 })
 ```
@@ -124,7 +124,7 @@ dragonrend.addHandlerBefore(async (data) => {
 
 ```js
 // async/await or return promise
-dragonrend.addHandlerAfter(async (data) => {
+dragonrend.addHandlerAfter(async (ctx) => {
   // do something
 })
 ```
@@ -135,12 +135,12 @@ By default Dragonrend returns status 500 and body `{"error":"Internal Server Err
 
 `fn` Type: `Function`
 
-`fn` should have `(e, data)` signature. `e` is an error occurred, `data` is context.
+`fn` should have `(e, ctx)` signature. `e` is an error occurred, `ctx` is context.
 
 ```js
-dragonrend.setErrorHandler((error, data) => {
-  data.res.writeHead(500, { 'Content-Type': 'application/json' })
-  data.res.end(JSON.parse({ error }))
+dragonrend.setErrorHandler((error, ctx) => {
+  ctx.res.writeHead(500, { 'Content-Type': 'application/json' })
+  ctx.res.end(JSON.parse({ error }))
 })
 ```
 
@@ -155,13 +155,15 @@ http
 
 ## Class Router
 
+`Router` **inherits** [Impetuous](https://github.com/EgorRepnikov/impetuous).
+
 ### constructor
-`Constructor` gets the object with a prefix, which appends to all routes of that instance of Router.
+`Constructor` gets the object with a prefix (not required), which appends to all routes of that instance of Router.
 ```js
 new Router({ prefix: '/api' })
 ```
 
-### GET PUT PATCH POST DELETE HEAD OPTIONS (fn)
+### GET PUT PATCH POST DELETE HEAD OPTIONS (path, fn)
 These methods add request handlers.
 
 `fn` Type: `Function`
@@ -169,7 +171,7 @@ These methods add request handlers.
 ```js
 const router = new Router()
 
-router.get('/path', async (data) => {
+router.get('/path', async (ctx) => {
   // do something
 })
 
@@ -181,7 +183,7 @@ router.post('/path', ({ req, res }) => {
 ### merge(..routers)
 `merge` combines one or more instances of Router.
 
-Type: Router|Array
+Type: Router|Array<Router>
 
 ```js
 const router1 = new Router({ prefix: '/base' })
