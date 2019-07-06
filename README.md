@@ -180,7 +180,7 @@ router.post('/path', ({ req, res }) => {
 })
 ```
 
-### merge(..routers)
+### merge(...routers)
 `merge` combines one or more instances of Router.
 
 Type: Router|Array<Router>
