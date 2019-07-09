@@ -1,6 +1,6 @@
 {
   "name": "dragonrend",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "Node.js Web Framework",
   "main": "index.js",
   "scripts": {},
@@ -21,6 +21,6 @@
   },
   "homepage": "https://github.com/EgorRepnikov/dragonrend#readme",
   "dependencies": {
-    "impetuous": "^0.1.0"
+    "impetuous": "^0.1.2"
   }
 }
