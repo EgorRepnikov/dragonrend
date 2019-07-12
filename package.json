@@ -1,6 +1,6 @@
 {
   "name": "dragonrend",
-  "version": "0.4.6",
+  "version": "0.5.0",
   "description": "Node.js Web Framework",
   "main": "index.js",
   "scripts": {},
