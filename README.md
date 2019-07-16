@@ -38,7 +38,7 @@ const { Dragonrend } = require('dragonrend')
 
 const app = new Dragonrend()
 
-app.handler((ctx) => {
+app.middleware((ctx) => {
   ctx.request = {}
   return new Promise((resolve) => {
     const { req, request } = ctx
@@ -51,7 +51,7 @@ app.handler((ctx) => {
   })
 })
 
-app.handler((ctx) => ctx.response = {})
+app.middleware((ctx) => ctx.response = {})
 
 app.setRootHandler(({ res, response }) => {
   res.writeHead(response.status, { 'Content-Type': 'application/json' })
@@ -80,9 +80,9 @@ const response = require('dragonrend-response')
 
 const app = new Dragonrend()
 
-app.handler(jsonBodyParser)
+app.middleware(jsonBodyParser.middleware)
+app.middleware(response.middleware)
 
-app.handler(response.handler)
 app.setRootHandler(response.rootHandler)
 
 app.get('/get', ({ request, response }) => {
@@ -104,14 +104,14 @@ http
 ## Class Dragonrend
 `Dragonrend` **inherits** `Router` (`Router` inherits [Impetuous](https://github.com/EgorRepnikov/impetuous) in turn).
 
-### handler(fn)
-`handler` adds handler which will called before Router's handler.
+### middleware(...fns)
+`middleware` adds handler which will called before Router's handler.
 
-`fn` Type: `Function`
+`fns` Type: `Function|Array<Function>`
 
 ```js
 // async/await or return promise
-dragonrend.handler(async (ctx) => {
+dragonrend.middleware(async (ctx) => {
   // do something
 })
 ```
