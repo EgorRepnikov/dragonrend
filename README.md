@@ -38,7 +38,7 @@ const { Dragonrend } = require('dragonrend')
 
 const app = new Dragonrend()
 
-app.addHandlerBefore((ctx) => {
+app.handler((ctx) => {
   ctx.request = {}
   return new Promise((resolve) => {
     const { req, request } = ctx
@@ -51,7 +51,12 @@ app.addHandlerBefore((ctx) => {
   })
 })
 
-app.addHandlerBefore((ctx) => ctx.response = {})
+app.handler((ctx) => ctx.response = {})
+
+app.setRootHandler(({ res, response }) => {
+  res.writeHead(response.status, { 'Content-Type': 'application/json' })
+  res.end(JSON.parse(response.body))
+})
 
 app.get('/hello', ({ request, response }) => {
   response.body = {
@@ -59,11 +64,6 @@ app.get('/hello', ({ request, response }) => {
     message: 'Hello World'
   }
   response.status = 200
-})
-
-app.addHandlerAfter(({ res, response }) => {
-  res.writeHead(response.status, { 'Content-Type': 'application/json' })
-  res.end(JSON.parse(response.body))
 })
 
 http
@@ -76,15 +76,14 @@ http
 const http = require('http')
 const { Dragonrend } = require('dragonrend')
 const jsonBodyParser = require('dragonrend-json-body-parser')
-const jsonResponse = require('dragonrend-response')
+const response = require('dragonrend-response')
 
 const app = new Dragonrend()
 
-app.addHandlerBefore(jsonBodyParser.before)
+app.handler(jsonBodyParser)
 
-app.addHandlerBefore(jsonResponse.before)
-
-app.addHandlerAfter(jsonResponse.after)
+app.handler(response.handler)
+app.setRootHandler(response.rootHandler)
 
 app.get('/get', ({ request, response }) => {
   response.body = {
@@ -105,27 +104,29 @@ http
 ## Class Dragonrend
 `Dragonrend` **inherits** `Router` (`Router` inherits [Impetuous](https://github.com/EgorRepnikov/impetuous) in turn).
 
-### addHandlerBefore(fn)
-`addHandlerBefore` adds handler which will called before Router's handler.
+### handler(fn)
+`handler` adds handler which will called before Router's handler.
 
 `fn` Type: `Function`
 
 ```js
 // async/await or return promise
-dragonrend.addHandlerBefore(async (ctx) => {
+dragonrend.handler(async (ctx) => {
   // do something
 })
 ```
 
-### addHandlerAfter(fn)
-`addHandlerAfter` adds handler which will called after Router's handler.
+### setRootHandler(fn)
+`setRootHandler` sets App's root handler. Therefore it will be called after all middleware handlers.
+By default Dragonrend returns status 200 and body `OK` with content type `text/plain`.
 
 `fn` Type: `Function`
 
 ```js
-// async/await or return promise
-dragonrend.addHandlerAfter(async (ctx) => {
-  // do something
+dragonrend.setRootHandler((ctx) => {
+  const { res, response } = ctx
+  res.writeHead(response.status, { 'Content-Type': 'application/json' })
+  res.end(JSON.parse(response.body))
 })
 ```
 
@@ -166,12 +167,14 @@ new Router({ prefix: '/api' })
 ### GET PUT PATCH POST DELETE HEAD OPTIONS (path, fn)
 These methods add request handlers.
 
+`path` Type: `String`
+
 `fn` Type: `Function`
 
 ```js
 const router = new Router()
 
-router.get('/path', async (ctx) => {
+router.get('/path/:param', async (ctx) => {
   // do something
 })
 
