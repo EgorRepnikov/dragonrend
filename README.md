@@ -80,10 +80,9 @@ const response = require('dragonrend-response')
 
 const app = new Dragonrend()
 
-app.middleware(jsonBodyParser.middleware)
-app.middleware(response.middleware)
-
-app.setRootHandler(response.rootHandler)
+// These handlers are configured themselves
+jsonBodyParser(app)
+response(app)
 
 app.get('/get', ({ request, response }) => {
   response.body = {
@@ -103,6 +102,18 @@ http
 
 ## Class Dragonrend
 `Dragonrend` **inherits** `Router` (`Router` inherits [Impetuous](https://github.com/EgorRepnikov/impetuous) in turn).
+
+### baseContext
+`baseContext` stores the values you can get from `ctx`.
+
+```js
+// add value
+dragonrend.baseContext.someValue = {}
+
+dragonrend.get('/path', (ctx) => {
+  const { someValue } = ctx // <- and use it
+})
+```
 
 ### middleware(...fns)
 `middleware` adds handler which will called before Router's handler.
