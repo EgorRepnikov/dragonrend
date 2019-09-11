@@ -15,7 +15,6 @@ Select an option for your needs.
 There is possible to use it as a router for Node's http module.
 
 ```js
-const http = require('http')
 const { Dragonrend } = require('dragonrend')
 
 const app = new Dragonrend()
@@ -26,14 +25,11 @@ app.get('/hello', ({ req, res }) => {
   res.end(JSON.parse({ message: 'Hello World' }))
 })
 
-http
-  .createServer(app.toListener())
-  .listen(8080)
+app.toServer().listen(8080)
 ```
 
 ## Dragonrend + Own Handlers
 ```js
-const http = require('http')
 const { Dragonrend } = require('dragonrend')
 
 const app = new Dragonrend()
@@ -66,14 +62,11 @@ app.get('/hello', ({ request, response }) => {
   response.status = 200
 })
 
-http
-  .createServer(app.toListener())
-  .listen(8080)
+app.toServer().listen(8080)
 ```
 
 ## Dragonrend + Handlers from NPM
 ```js
-const http = require('http')
 const { Dragonrend } = require('dragonrend')
 const jsonBodyParser = require('dragonrend-json-body-parser')
 const response = require('dragonrend-response')
@@ -91,20 +84,18 @@ app.get('/get', ({ request, response }) => {
   }
 })
 
-http
-  .createServer(app.toListener())
-  .listen(8080)
+app.toServer().listen(8080)
 ```
 
 # API
 ### ctx
-`ctx` is a context that contains the request `req` and response `res` by default.
+This is a context that contains the request `req` and response `res` by default.
 
 ## Class Dragonrend
 `Dragonrend` **inherits** `Router` (`Router` inherits [Impetuous](https://github.com/EgorRepnikov/impetuous) in turn).
 
 ### baseContext
-`baseContext` stores the values you can get from `ctx`.
+Stores the values you can get from `ctx`.
 
 ```js
 // add value
@@ -116,7 +107,7 @@ dragonrend.get('/path', (ctx) => {
 ```
 
 ### middleware(...fns)
-`middleware` adds handler which will called before Router's handler.
+Adds handler which will called before Router's handler.
 
 `fns` Type: `Function|Array<Function>`
 
@@ -128,7 +119,7 @@ dragonrend.middleware(async (ctx) => {
 ```
 
 ### setRootHandler(fn)
-`setRootHandler` sets App's root handler. Therefore it will be called after all middleware handlers.
+Sets App's root handler. Therefore it will be called after all middleware handlers.
 By default Dragonrend returns status 200 and body `OK` with content type `text/plain`.
 
 `fn` Type: `Function`
@@ -142,7 +133,7 @@ dragonrend.setRootHandler((ctx) => {
 ```
 
 ### setErrorHandler(fn)
-`setErrorHandler` sets error handler.
+Sets error handler.
 By default Dragonrend returns status 500 and body `{"error":"Internal Server Error"}`.
 
 `fn` Type: `Function`
@@ -156,8 +147,8 @@ dragonrend.setErrorHandler((error, ctx) => {
 })
 ```
 
-### toListener
-`toListener` returns request listener for Node's http server.
+### toListener()
+Returns request listener for Node's http server.
 
 ```js
 http
@@ -165,12 +156,20 @@ http
   .listen(8080)
 ```
 
+### toServer()
+Returns instance of Server with installed `requestListener`.
+
+```js
+dragonrend.toServer().listen(8080)
+```
+
 ## Class Router
 
 `Router` **inherits** [Impetuous](https://github.com/EgorRepnikov/impetuous).
 
 ### constructor
-`Constructor` gets the object with a prefix (not required), which appends to all routes of that instance of Router.
+Gets the object with a prefix (not required), which appends to all routes of that instance of Router.
+
 ```js
 new Router({ prefix: '/api' })
 ```
@@ -195,7 +194,7 @@ router.post('/path', ({ req, res }) => {
 ```
 
 ### merge(...routers)
-`merge` combines one or more instances of Router.
+Combines one or more instances of Router.
 
 Type: Router|Array<Router>
 
