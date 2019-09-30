@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/EgorRepnikov/dragonrend.svg?branch=master)](https://travis-ci.org/EgorRepnikov/dragonrend)
+[![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/EgorRepnikov/dragonrend/blob/master/LICENSE)
+
 # Dragonrend
 Dragonrend is simple, fast and lightweight Node.js library for building web applications.
 
