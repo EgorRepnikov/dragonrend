@@ -16,12 +16,12 @@ describe('reducer function', () => {
   it('stop on ctx.res.isSent', async () => {
     let counter = 0
     const fns = reducer([
-      (ctx) => counter++,
+      () => counter++,
       (ctx) => {
         counter++
         ctx.res.isSent = true
       },
-      (ctx) => counter++,
+      () => counter++,
     ], {
       res: { isSent: false }
     })
@@ -31,8 +31,8 @@ describe('reducer function', () => {
   it('catch error in promises chain', async () => {
     let counter = 0
     const fns = reducer([
-      (ctx) => { throw new Error('Error') },
-      (ctx) => counter++
+      () => { throw new Error('Error') },
+      () => counter++
     ], {
       res: { isSent: false }
     })
