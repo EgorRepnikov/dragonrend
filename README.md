@@ -25,7 +25,7 @@ const app = new Dragonrend()
 app.get('/hello', ({ req, res }) => {
   // Do something with 'req'
   res.writeHead(200, { 'Content-Type': 'application/json' })
-  res.end(JSON.parse({ message: 'Hello World' }))
+  res.end(JSON.stringify({ message: 'Hello World' }))
 })
 
 app.toServer().listen(8080)
@@ -54,7 +54,7 @@ app.middleware((ctx) => ctx.response = {})
 
 app.setRootHandler(({ res, response }) => {
   res.writeHead(response.status, { 'Content-Type': 'application/json' })
-  res.end(JSON.parse(response.body))
+  res.end(JSON.stringify(response.body))
 })
 
 app.get('/hello', ({ request, response }) => {
@@ -131,7 +131,7 @@ By default Dragonrend returns status 200 and body `OK` with content type `text/p
 dragonrend.setRootHandler((ctx) => {
   const { res, response } = ctx
   res.writeHead(response.status, { 'Content-Type': 'application/json' })
-  res.end(JSON.parse(response.body))
+  res.end(JSON.stringify(response.body))
 })
 ```
 
@@ -146,7 +146,7 @@ By default Dragonrend returns status 500 and body `{"error":"Internal Server Err
 ```js
 dragonrend.setErrorHandler((error, ctx) => {
   ctx.res.writeHead(500, { 'Content-Type': 'application/json' })
-  ctx.res.end(JSON.parse({ error }))
+  ctx.res.end(JSON.stringify({ error }))
 })
 ```
 
