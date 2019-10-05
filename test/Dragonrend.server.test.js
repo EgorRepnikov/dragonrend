@@ -9,12 +9,11 @@ const Dragonrend = require('../lib/Dragonrend')
 describe('Dragonrend Server', () => {
   describe('default', () => {
     const dragonrend = new Dragonrend()
-    dragonrend.get('/default', () => {})
-    dragonrend.get('/error', () => { throw new Error() })
-    const server = dragonrend.toServer()
+      .get('/default', () => {})
+      .get('/error', () => { throw new Error() })
 
-    beforeAll(() => server.listen(8080))
-    afterAll(() => server.close())
+    beforeAll(async () => await dragonrend.listen(8080))
+    afterAll(async () => await dragonrend.close())
 
     it('GET /not/found', async () => {
       const res = await rp('not/found')
@@ -34,28 +33,16 @@ describe('Dragonrend Server', () => {
   })
   describe('custom', () => {
     const dragonrend = new Dragonrend()
-    dragonrend.setErrorHandler((e, { res }) => {
-      res.writeHead(500, { 'Content-Type': 'application/json' })
-      res.end(JSON.stringify({ error: e.message }))
-    })
-    dragonrend.setRootHandler((ctx) => {
-      const { res, status, body } = ctx
-      res.writeHead(status, { 'Content-Type': 'application/json' })
-      res.end(JSON.stringify(body))
-    })
-    dragonrend.get('/json', ({ res }) => {
-      res.writeHead(200, { 'Content-Type': 'application/json' })
-      res.end('{"message":"Hello There"}')
-    })
-    dragonrend.get('/error', () => { throw new Error('Mock') })
-    dragonrend.get('/root-handler', (ctx) => {
-      ctx.status = 200
-      ctx.body = { 'message': 'Hello There' }
-    })
-    const server = dragonrend.toServer()
+      .setErrorHandler((e, { response }) => {
+        response.status(500).json({ error: e.message })
+      })
+      .get('/json', ({ response }) => {
+        response.status(200).json({ message: 'Hello There' })
+      })
+      .get('/error', () => { throw new Error('Mock') })
 
-    beforeAll(() => server.listen(8080))
-    afterAll(() => server.close())
+    beforeAll(async () => await dragonrend.listen(8080))
+    afterAll(async () => await dragonrend.close())
 
     it('GET /json', async () => {
       const res = await rp('json', { json: true })
@@ -66,11 +53,6 @@ describe('Dragonrend Server', () => {
       const res = await rp('error', { json: true })
       expect(res.statusCode).toEqual(500)
       expect(res.body).toEqual({ error: 'Mock' })
-    })
-    it('GET /root-handler', async () => {
-      const res = await rp('root-handler', { json: true })
-      expect(res.statusCode).toEqual(200)
-      expect(res.body).toEqual({ message: 'Hello There' })
     })
   })
 })
