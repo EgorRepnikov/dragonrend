@@ -2,9 +2,9 @@
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/EgorRepnikov/dragonrend/blob/master/LICENSE)
 
 # Dragonrend
-Dragonrend is simple, fast and lightweight Node.js library for building web applications.
+Dragonrend is simple, fast and lightweight Node.js framework for building web applications.
 
-All these advantages are achieved due to the fact that there is nothing superfluous. You use only what you need. And then you get a speed comparable to bare Node.
+All these advantages are achieved due to the fact that there is nothing superfluous. You have only what it is needed for creating Backend apps - no more no less. And then you get a speed comparable to bare Node.
 
 # Installation
 ```bash
@@ -130,6 +130,8 @@ const router = new Router({ prefix: '/api' })
 These methods add request handlers.
 
 ```js
+const { Router } = require('dragonrend')
+
 const router = new Router()
 
 router.get('/path/:param', async (ctx) => {})
