@@ -24,7 +24,8 @@ describe('Request', () => {
         accept: 'application/json',
         host: 'localhost:8080',
         connection: 'close'
-      }
+      },
+      query: {}
     })
   })
   it('get request with json body', async () => {
@@ -43,6 +44,7 @@ describe('Request', () => {
         host: 'localhost:8080',
         connection: 'close'
       },
+      query: {},
       rawBody: '{"message":"Test"}',
       body: { message: 'Test' }
     })
@@ -60,6 +62,7 @@ describe('Request', () => {
         host: 'localhost:8080',
         connection: 'close'
       },
+      query: {},
       rawBody: 'Test',
       body: 'Test'
     })
