@@ -11,108 +11,62 @@ All these advantages are achieved due to the fact that there is nothing superflu
 $ npm install dragonrend
 ```
 
-# There Are 3 Ways To Use Dragonrend
-Select an option for your needs.
-
-## Bare Dragonrend
-There is possible to use it as a router for Node's http module.
+# Usage
 
 ```js
 const { Dragonrend } = require('dragonrend')
 
 const app = new Dragonrend()
 
-app.get('/hello', ({ req, res }) => {
-  // Do something with 'req'
-  res.writeHead(200, { 'Content-Type': 'application/json' })
-  res.end(JSON.stringify({ message: 'Hello World' }))
+app.get('/', (ctx) => {
+  ctx.response.json({ message: 'Hi There' })
 })
 
-app.toServer().listen(8080)
-```
-
-## Dragonrend + Own Handlers
-```js
-const { Dragonrend } = require('dragonrend')
-
-const app = new Dragonrend()
-
-app.middleware((ctx) => {
-  ctx.request = {}
-  return new Promise((resolve) => {
-    const { req, request } = ctx
-    let buffer = ''
-    req.on('data', (chunk) => buffer += chunk)
-    req.on('end', () => {
-      request.body = JSON.parse(buffer)
-      resolve()
-    })
-  })
-})
-
-app.middleware((ctx) => ctx.response = {})
-
-app.setRootHandler(({ res, response }) => {
-  res.writeHead(response.status, { 'Content-Type': 'application/json' })
-  res.end(JSON.stringify(response.body))
-})
-
-app.get('/hello', ({ request, response }) => {
-  response.body = {
-    request: request.body,
-    message: 'Hello World'
-  }
-  response.status = 200
-})
-
-app.toServer().listen(8080)
-```
-
-## Dragonrend + Handlers from NPM
-```js
-const { Dragonrend } = require('dragonrend')
-const jsonBodyParser = require('dragonrend-json-body-parser')
-const response = require('dragonrend-response')
-
-const app = new Dragonrend()
-
-// These handlers are configured themselves
-jsonBodyParser(app)
-response(app)
-
-app.get('/get', ({ request, response }) => {
-  response.body = {
-    request: request.body,
-    message: 'Hello World'
-  }
-})
-
-app.toServer().listen(8080)
+app.listen(8080).then(() => console.log('Server has been started'))
 ```
 
 # API
-### ctx
-This is a context that contains the request `req` and response `res` by default.
 
-## Class Dragonrend
-`Dragonrend` **inherits** `Router` (`Router` inherits [Impetuous](https://github.com/EgorRepnikov/impetuous) in turn).
+## Context
+All middleware functions and handlers get the `context` object.
+Context contains the `request` and `response` objects by default.
 
-### baseContext
+## Dragonrend
+`Dragonrend` **inherits** `Router` (`Router` is a wrapper over [Impetuous](https://github.com/EgorRepnikov/impetuous)).
+
+### context(key, value)
+`key: String`
+
+`value: Any`
+
 Stores the values you can get from `ctx`.
 
 ```js
 // add value
-dragonrend.baseContext.someValue = {}
+dragonrend.context('someValue', 'mock')
 
 dragonrend.get('/path', (ctx) => {
   const { someValue } = ctx // <- and use it
 })
 ```
 
-### middleware(...fns)
-Adds handler which will called before Router's handler.
+### addContentTypeParser(contentType, fn)
+`contentType: String`
 
-`fns` Type: `Function|Array<Function>`
+`fn: Function` - `fn` gets request's body
+
+Method add parser of requests body by content type.
+
+```js
+dragonrend.addContentTypeParser('text/plain', (body) => {
+  return body.toUpperCase()
+})
+```
+
+### middleware(...fns)
+`fns: Function|Array<Function>`
+
+Adds handler which will called before Router's handler.
 
 ```js
 // async/await or return promise
@@ -121,85 +75,72 @@ dragonrend.middleware(async (ctx) => {
 })
 ```
 
-### setRootHandler(fn)
-Sets App's root handler. Therefore it will be called after all middleware handlers.
-By default Dragonrend returns status 200 and body `OK` with content type `text/plain`.
-
-`fn` Type: `Function`
-
-```js
-dragonrend.setRootHandler((ctx) => {
-  const { res, response } = ctx
-  res.writeHead(response.status, { 'Content-Type': 'application/json' })
-  res.end(JSON.stringify(response.body))
-})
-```
-
 ### setErrorHandler(fn)
+`fn: Function`
+
+`fn` should have `(error, ctx)` signature. `error` is an error occurred, `ctx` is context.
+
 Sets error handler.
 By default Dragonrend returns status 500 and body `{"error":"Internal Server Error"}`.
 
-`fn` Type: `Function`
-
-`fn` should have `(e, ctx)` signature. `e` is an error occurred, `ctx` is context.
-
 ```js
 dragonrend.setErrorHandler((error, ctx) => {
-  ctx.res.writeHead(500, { 'Content-Type': 'application/json' })
-  ctx.res.end(JSON.stringify({ error }))
+  ctx.response.status(500).json({ error: error.message })
 })
 ```
 
-### toListener()
-Returns request listener for Node's http server.
+### listen(portOrOptions)
+
+`portOrOptions: Number|Object`
+
+Method is wrapper over [http's server.listen()](https://nodejs.org/api/http.html#http_server_listen). It gets port number or options object like [Net server.listen()](https://nodejs.org/api/net.html#net_server_listen_options_callback). Method returns `Promise`.
 
 ```js
-http
-  .createServer(dragonrend.toListener())
-  .listen(8080)
+dragonrend.listen(8080).then(() => console.log('Started))
+// or
+dragonrend.listen({
+  host: 'localhost',
+  port: 80,
+  exclusive: true
+}).then(() => console.log('Started'))
 ```
 
-### toServer()
-Returns instance of Server with installed `requestListener`.
+### close()
+Method closes server and returns `Promise`.
 
 ```js
-dragonrend.toServer().listen(8080)
+dragonrend.close().then(() => console.log('Closed'))
 ```
 
-## Class Router
-
-`Router` **inherits** [Impetuous](https://github.com/EgorRepnikov/impetuous).
+## Router
+`Router` is a wrapper over [Impetuous](https://github.com/EgorRepnikov/impetuous).
 
 ### constructor
 Gets the object with a prefix (not required), which appends to all routes of that instance of Router.
 
 ```js
-new Router({ prefix: '/api' })
+const router = new Router({ prefix: '/api' })
 ```
 
 ### GET PUT PATCH POST DELETE HEAD OPTIONS (path, fn)
+`path: String`
+
+`fn: Function` - `fn` gets `ctx`
+
 These methods add request handlers.
-
-`path` Type: `String`
-
-`fn` Type: `Function`
 
 ```js
 const router = new Router()
 
-router.get('/path/:param', async (ctx) => {
-  // do something
-})
+router.get('/path/:param', async (ctx) => {})
 
-router.post('/path', ({ req, res }) => {
-  // do something
-})
+router.post('/path', ({ request, response }) => {})
 ```
 
 ### merge(...routers)
-Combines one or more instances of Router.
+`routers: Router|Array<Router>`
 
-Type: Router|Array<Router>
+Combines one or more instances of Router.
 
 ```js
 const router1 = new Router({ prefix: '/base' })
@@ -207,6 +148,19 @@ const router2 = new Router()
 const router3 = new Router({ prefix: '/api' })
 
 router1.merge(router2, router3)
+```
+
+### setNotFoundHandler(fn)
+`fn: Function`
+
+Adds handler in case a route will not found.
+
+```js
+const router = new Router()
+
+router.setNotFoundHandler((ctx) => {
+  ctx.response.status(404).text('Not Found')
+})
 ```
 
 ### Instance of Router should be added to Dragonrend
@@ -218,6 +172,132 @@ const router = new Router()
 // add some handlers to router
 dragonrend.merge(router)
 // start server...
+```
+
+## Request
+Request objects is added to `context` by default.
+
+### headers
+`headers` is object, which contains all headers of request.
+
+```js
+dragonrend.get((ctx) => {
+  const { headers } = ctx.request
+  console.log(headers['content-length'])
+})
+```
+
+### originalUrl
+`originalUrl` is url from request without changes.
+
+```js
+dragonrend.middleware((ctx) => {
+  const { originalUrl } = ctx.request
+  console.log(originalUrl)
+})
+```
+
+### method
+`method` is request's method.
+
+```js
+dragonrend.middleware((ctx) => {
+  const { method } = ctx.request
+  console.log(method)
+})
+```
+
+### body
+`body` is parsed request's body.
+
+```js
+dragonrend.middleware((ctx) => {
+  const { body } = ctx.request
+  console.log(body)
+})
+```
+
+### rawBody
+`rawBody` is no parsed request's body.
+
+```js
+dragonrend.middleware((ctx) => {
+  const { rawBody } = ctx.request
+  console.log(rawBody)
+})
+```
+
+## Response
+Response objects is added to `context` by default.
+
+### header(key, value)
+`key: String`
+
+`value: String`
+
+Adds header key-value pair to Response.
+
+```js
+dragonrend.middleware((ctx) => {
+  ctx.response.header('x-total-count', '0').text('')
+})
+```
+
+### status(statusCode)
+`statusCode: Number`
+
+Sets custom status code to Response. Default value is `200`.
+
+```js
+dragonrend.middleware((ctx) => {
+  ctx.response.status(201).text('OK')
+})
+```
+
+### json(data)
+`data: Object`
+
+Sends request with `application/json` body.
+
+```js
+dragonrend.middleware((ctx) => {
+  ctx.response.json({ message: 'Hi There' })
+})
+```
+
+### text(data)
+`data: String`
+
+Sends request with `text/plain` body.
+
+```js
+dragonrend.middleware((ctx) => {
+  ctx.response.text('Hi There')
+})
+```
+
+### html(data)
+`data: String`
+
+Sends request with `text/html` body.
+
+```js
+dragonrend.middleware((ctx) => {
+  ctx.response.html('<p>Hi There</p>')
+})
+```
+
+### send(data, contentType)
+`data: String|Buffer`
+
+`contentType: String`
+
+Sends request with custom body.
+
+```js
+dragonrend.middleware((ctx) => {
+  ctx.response.send(imageBuffer, 'image/jpeg')
+})
 ```
 
 # Author
