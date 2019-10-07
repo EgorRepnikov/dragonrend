@@ -1,6 +1,6 @@
 const { reduce } = require('../lib/utils')
 
-const isSentS = Symbol.for('isSent')
+const { isSentS } = require('../lib/symbols')
 
 describe('Utils', () => {
   describe('reduce function', () => {

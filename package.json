@@ -1,10 +1,10 @@
 {
   "name": "dragonrend",
-  "version": "0.12.1",
+  "version": "0.12.2",
   "description": "Node.js Web Framework",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --forceExit"
   },
   "repository": {
     "type": "git",
