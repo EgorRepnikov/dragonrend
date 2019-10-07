@@ -1,5 +1,7 @@
 const { reduce } = require('../lib/utils')
 
+const isSentS = Symbol.for('isSent')
+
 describe('Utils', () => {
   describe('reduce function', () => {
     it('reduce 3 functions', async () => {
@@ -9,7 +11,7 @@ describe('Utils', () => {
         () => counter++,
         () => counter++
       ], {
-        response: { isSent: false }
+        response: { [isSentS]: false }
       })
       await fns
       expect(counter).toEqual(3)
@@ -20,11 +22,11 @@ describe('Utils', () => {
         () => counter++,
         (ctx) => {
           counter++
-          ctx.response.isSent = true
+          ctx.response[isSentS] = true
         },
         () => counter++,
       ], {
-        response: { isSent: false }
+        response: { [isSentS]: false }
       })
       await fns
       expect(counter).toEqual(2)
@@ -35,7 +37,7 @@ describe('Utils', () => {
         () => { throw new Error('Error') },
         () => counter++
       ], {
-        response: { isSent: false }
+        response: { [isSentS]: false }
       })
       try {
         await fns
