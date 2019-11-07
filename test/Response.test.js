@@ -17,7 +17,7 @@ describe('Request', () => {
       response.status(201).json({ message: 'test' }))
 
   beforeAll(async () => await dragonrend.start(8080))
-  afterAll(async () => await dragonrend.close())
+  afterAll(async () => await dragonrend.stop())
 
   it('get default response', async () => {
     const res = await rp.get('default')

@@ -105,11 +105,11 @@ dragonrend.start({
 }).then(() => console.log('Started'))
 ```
 
-### close()
-Method closes server and returns `Promise`.
+### stop()
+Method stops server and returns `Promise`.
 
 ```js
-dragonrend.close().then(() => console.log('Closed'))
+dragonrend.stop().then(() => console.log('Stopped'))
 ```
 
 ## Router
