@@ -11,7 +11,7 @@ describe('Request', () => {
     .get('/test', ({ request, response }) => response.json(request))
     .post('/test-body', ({ request, response }) => response.json(request))
 
-  beforeAll(async () => await dragonrend.listen(8080))
+  beforeAll(async () => await dragonrend.start(8080))
   afterAll(async () => await dragonrend.close())
 
   it('get request', async () => {

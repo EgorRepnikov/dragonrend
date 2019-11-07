@@ -22,7 +22,7 @@ app.get('/', (ctx) => {
   ctx.response.json({ message: 'Hi There' })
 })
 
-app.listen(8080).then(() => console.log('Server has been started'))
+app.start(8080).then(() => console.log('Server has been started'))
 ```
 
 # API
@@ -89,16 +89,16 @@ dragonrend.setErrorHandler((error, ctx) => {
 })
 ```
 
-### listen(portOrOptions)
+### start(portOrOptions)
 
 `portOrOptions: Number|Object`
 
 Method is wrapper over [http's server.listen()](https://nodejs.org/api/http.html#http_server_listen). It gets port number or options object like [Net server.listen()](https://nodejs.org/api/net.html#net_server_listen_options_callback). Method returns `Promise`.
 
 ```js
-dragonrend.listen(8080).then(() => console.log('Started'))
+dragonrend.start(8080).then(() => console.log('Started'))
 // or
-dragonrend.listen({
+dragonrend.start({
   host: 'localhost',
   port: 80,
   exclusive: true

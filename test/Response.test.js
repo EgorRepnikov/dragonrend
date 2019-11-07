@@ -16,7 +16,7 @@ describe('Request', () => {
     .get('/status-json-body', ({ response }) =>
       response.status(201).json({ message: 'test' }))
 
-  beforeAll(async () => await dragonrend.listen(8080))
+  beforeAll(async () => await dragonrend.start(8080))
   afterAll(async () => await dragonrend.close())
 
   it('get default response', async () => {

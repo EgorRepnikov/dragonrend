@@ -12,7 +12,7 @@ describe('Dragonrend Server', () => {
       .get('/default', () => {})
       .get('/error', () => { throw new Error() })
 
-    beforeAll(async () => await dragonrend.listen(8080))
+    beforeAll(async () => await dragonrend.start(8080))
     afterAll(async () => await dragonrend.close())
 
     it('GET /not/found', async () => {
@@ -41,7 +41,7 @@ describe('Dragonrend Server', () => {
       })
       .get('/error', () => { throw new Error('Mock') })
 
-    beforeAll(async () => await dragonrend.listen(8080))
+    beforeAll(async () => await dragonrend.start(8080))
     afterAll(async () => await dragonrend.close())
 
     it('GET /json', async () => {
