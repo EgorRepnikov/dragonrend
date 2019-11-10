@@ -1,5 +1,9 @@
 const Dragonrend = require('./lib/Dragonrend')
 const Router = require('./lib/Router')
+const routing = require('./lib/routing')
 
-exports.Dragonrend = Dragonrend
-exports.Router = Router
+module.exports = {
+  Dragonrend,
+  Router,
+  ...routing
+}
