@@ -208,7 +208,38 @@ dragonrend.merge(router)
 // start server...
 ```
 
-> **Feature:** Instances of Router are added automatically to application, if you add them to the `routes` directory. Router file should export `Router` object.
+> **Feature:** Instances of Router are added automatically to application, if you add them to the `routes` directory at the root of project. Router file should export `Router` object.
+
+## Routify Function
+`routify` function creates a router very easily and productively. This is the recommended way to declare a router.
+
+```js
+const { routify, GET, POST } = require('dragonrend')
+
+const router = routify()([
+  [GET, '/path', (ctx) => ctx.response.text('OK')],
+  [POST, '/path',
+    ctx => {
+      // Handle something
+    },
+    ctx => ctx.response.text('OK')]
+])
+```
+
+Example with options:
+
+```js
+const { routify, GET } = require('dragonrend')
+
+const router = routify({
+  prefix: '/api',
+  notFoundHandler(ctx) {
+    ctx.response.status(404).text('Not Found')
+  }
+})([
+  // Declare your routes here
+])
+```
 
 ## Request
 Request objects is added to `context` by default.
@@ -333,6 +364,27 @@ Sends request with custom body.
 ```js
 dragonrend.middleware((ctx) => {
   ctx.response.send(imageBuffer, 'image/jpeg')
+})
+```
+
+## Auto Including
+Dragonrend supports auto including of Middleware-functions, Routers and Content Type Parsers. You should follow some rules for this functionality to work.
+
+- Files must be in specific directories at the root of project.
+  - Middleware-functions in `middleware` directory.
+  - Routers Instances in `routes` directory.
+  - Content Type Parsers in `parsers` directory.
+- The root directory is the directory that contains the file that is launched very first, i.e. directory of the Node.js process. If you start project with npm script (like `npm run start`) and all JS files are in `src` directory and main file is `src/index.js`, then root is `../src` and Auto Including will not work. In this case, it can be customized.
+
+```js
+// There are default values
+const app = new Dragonrend({
+  autoIncludeRoutes: true,
+  routesDir: 'routes',
+  autoIncludeMiddleware: true,
+  middlewareDir: 'middleware',
+  autoIncludeContentTypeParsers: true,
+  contentTypeParsersDir: 'parsers'
 })
 ```
 
