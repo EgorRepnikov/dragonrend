@@ -9,7 +9,8 @@ const Dragonrend = require('../../lib/Dragonrend')
 describe('Routes Auto Including', () => {
   const dragonrend = new Dragonrend({
     routesDir: 'test/auto-including-tasks/routes',
-    middlewareDir: 'test/auto-including-tasks/middleware'
+    middlewareDir: 'test/auto-including-tasks/middleware',
+    contentTypeParsersDir: 'test/auto-including-tasks/parsers'
   })
 
   beforeAll(async () => await dragonrend.start(8080))
@@ -37,5 +38,16 @@ describe('Routes Auto Including', () => {
     const res = await rp('router2?middleware2=kek')
     expect(res.statusCode).toEqual(200)
     expect(res.body).toEqual('middleware2')
+  })
+
+  it('GET /parser (textPlain)', async () => {
+    const res = await rp.post('parser', {
+      headers: {
+        'content-type': 'text/plain'
+      },
+      body: 'hi there'
+    })
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual('HI THERE')
   })
 })
