@@ -23,6 +23,8 @@ app.get('/', (ctx) => {
 })
 
 app.start(8080).then(() => console.log('Server has been started'))
+// or cluster
+app.start({ port: 8080, cluster: true })
 ```
 
 # API
@@ -63,6 +65,18 @@ dragonrend.addContentTypeParser('text/plain', (body) => {
 })
 ```
 
+**Feature:** Parsers will be added automatically to application, if you put them in the `parsers` directory at the root of the project. Files should export an object like that:
+
+```js
+module.exports = {
+  contentType: 'text/plain',
+  parse(body) {
+    // do something
+    return body
+  }
+}
+```
+
 ### middleware(...fns)
 `fns: Function|Array<Function>`
 
@@ -73,6 +87,14 @@ Adds handler which will called before Router's handler.
 dragonrend.middleware(async (ctx) => {
   // do something
 })
+```
+
+**Feature:** Middleware-functions will be added automatically to application, if you put them in the `middleware` directory at the root of the project. Files should export a function by default.
+
+```js
+module.exports = ctx => {
+  // do something
+}
 ```
 
 ### setErrorHandler(fn)
@@ -93,7 +115,7 @@ dragonrend.setErrorHandler((error, ctx) => {
 
 `portOrOptions: Number|Object`
 
-Method is wrapper over [http's server.listen()](https://nodejs.org/api/http.html#http_server_listen). It gets port number or options object like [Net server.listen()](https://nodejs.org/api/net.html#net_server_listen_options_callback). Method returns `Promise`.
+Method gets port number or options object like [Net server.listen()](https://nodejs.org/api/net.html#net_server_listen_options_callback). Method returns `Promise`.
 
 ```js
 dragonrend.start(8080).then(() => console.log('Started'))
@@ -103,6 +125,15 @@ dragonrend.start({
   port: 80,
   exclusive: true
 }).then(() => console.log('Started'))
+```
+
+If you need to start a cluster, then `options` object should contain field `cluster: true`. Also you may set specific count of workers `workersCount: 2` (default value is `os.cpus().length`).
+
+```js
+dragonrend.start({
+  port: 80,
+  cluster: true
+}).then(() => console.log('Cluster is starting'))
 ```
 
 ### stop()
@@ -175,6 +206,8 @@ const router = new Router()
 dragonrend.merge(router)
 // start server...
 ```
+
+**Feature:** Instances of Router are added automatically to application, if you add them to the `routes` directory. Router file should export `Router` object.
 
 ## Request
 Request objects is added to `context` by default.
