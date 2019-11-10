@@ -1,4 +1,5 @@
 const Router = require('../lib/Router')
+const { executeS } = require('../lib/symbols')
 
 describe('Router', () => {
   const handler = (ctx) => ctx.test = true
@@ -11,7 +12,7 @@ describe('Router', () => {
         request: { method: 'GET', originalUrl: '/api/test' },
         test: false
       }
-      router.execute(ctx)[0](ctx)
+      router[executeS](ctx)[0](ctx)
       expect(ctx.test).toBe(true)
     })
   })
@@ -23,7 +24,7 @@ describe('Router', () => {
         request: { method: 'GET', originalUrl: '/test' },
         test: false
       }
-      router.execute(ctx)[0](ctx)
+      router[executeS](ctx)[0](ctx)
       expect(ctx.test).toEqual(true)
     })
   })
@@ -37,7 +38,7 @@ describe('Router', () => {
         request: { method: 'GET', originalUrl: '/api/test' },
         test: false
       }
-      router1.execute(ctx)[0](ctx)
+      router1[executeS](ctx)[0](ctx)
       expect(ctx.test).toEqual(true)
     })
   })
@@ -48,7 +49,7 @@ describe('Router', () => {
       const ctx = {
         request: { method: 'GET', originalUrl: '/not/found' }
       }
-      expect(router.execute(ctx)).toEqual('mock')
+      expect(router[executeS](ctx)).toEqual('mock')
     })
   })
 })
