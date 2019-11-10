@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/EgorRepnikov/dragonrend.svg?branch=master)](https://travis-ci.org/EgorRepnikov/dragonrend)
+[![version](https://badgen.net/npm/v/dragonrend)](https://badgen.net/npm/v/dragonrend)
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/EgorRepnikov/dragonrend/blob/master/LICENSE)
 
 # Dragonrend
@@ -65,7 +66,7 @@ dragonrend.addContentTypeParser('text/plain', (body) => {
 })
 ```
 
-**Feature:** Parsers will be added automatically to application, if you put them in the `parsers` directory at the root of the project. Files should export an object like that:
+> **Feature:** Parsers will be added automatically to application, if you put them in the `parsers` directory at the root of the project. Files should export an object like that:
 
 ```js
 module.exports = {
@@ -89,7 +90,7 @@ dragonrend.middleware(async (ctx) => {
 })
 ```
 
-**Feature:** Middleware-functions will be added automatically to application, if you put them in the `middleware` directory at the root of the project. Files should export a function by default.
+> **Feature:** Middleware-functions will be added automatically to application, if you put them in the `middleware` directory at the root of the project. Files should export a function by default.
 
 ```js
 module.exports = ctx => {
@@ -207,7 +208,7 @@ dragonrend.merge(router)
 // start server...
 ```
 
-**Feature:** Instances of Router are added automatically to application, if you add them to the `routes` directory. Router file should export `Router` object.
+> **Feature:** Instances of Router are added automatically to application, if you add them to the `routes` directory. Router file should export `Router` object.
 
 ## Request
 Request objects is added to `context` by default.
