@@ -5,7 +5,7 @@ describe('Router', () => {
   const handler = (ctx) => ctx.test = true
 
   describe('define route with prefix and execute', () => {
-    const router = routify({ prefix: '/api' })([[GET, '/test', handler]])
+    const router = routify({ prefix: '/api' })(GET('/test', handler))
     it('GET /api/test', () => {
       const ctx = {
         request: { method: 'GET', originalUrl: '/api/test' },
@@ -16,7 +16,7 @@ describe('Router', () => {
     })
   })
   describe('execute handler by route', () => {
-    const router = routify()([[GET, '/test', handler]])
+    const router = routify()(GET('/test', handler))
     it('GET /test', async () => {
       const ctx = {
         request: { method: 'GET', originalUrl: '/test' },

@@ -216,29 +216,29 @@ dragonrend.merge(router)
 ```js
 const { routify, GET, POST } = require('dragonrend')
 
-const router = routify()([
-  [GET, '/path', (ctx) => ctx.response.text('OK')],
-  [POST, '/path',
+const router = routify()(
+  GET('/path', (ctx) => ctx.response.text('OK')),
+  POST('/path',
     ctx => {
       // Handle something
     },
-    ctx => ctx.response.text('OK')]
-])
+    ctx => ctx.response.text('OK'))
+)
 ```
 
 Example with options:
 
 ```js
-const { routify, GET } = require('dragonrend')
+const { routify } = require('dragonrend')
 
 const router = routify({
   prefix: '/api',
   notFoundHandler(ctx) {
     ctx.response.status(404).text('Not Found')
   }
-})([
+})(
   // Declare your routes here
-])
+)
 ```
 
 ## Request
