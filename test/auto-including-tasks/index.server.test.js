@@ -8,9 +8,7 @@ const Dragonrend = require('../../lib/Dragonrend')
 
 describe('Auto Including Tasks', () => {
   const dragonrend = new Dragonrend({
-    routesDir: 'test/auto-including-tasks/routes',
-    middlewareDir: 'test/auto-including-tasks/middleware',
-    contentTypeParsersDir: 'test/auto-including-tasks/parsers'
+    rootDir: __dirname
   })
 
   beforeAll(async () => await dragonrend.start(8080))

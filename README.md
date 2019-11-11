@@ -384,7 +384,16 @@ const app = new Dragonrend({
   autoIncludeMiddleware: true,
   middlewareDir: 'middleware',
   autoIncludeContentTypeParsers: true,
-  contentTypeParsersDir: 'parsers'
+  contentTypeParsersDir: 'parsers',
+  rootDir: process.cwd()
+})
+```
+
+If you use `src` directory for example as root of application, then you should set that args:
+
+```js
+const app = new Dragonrend({
+  rootDir: __dirname
 })
 ```
 
