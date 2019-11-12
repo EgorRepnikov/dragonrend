@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/EgorRepnikov/dragonrend.svg?branch=master)](https://travis-ci.org/EgorRepnikov/dragonrend)
-[![version](https://badgen.net/npm/v/dragonrend)](https://badgen.net/npm/v/dragonrend)
+[![version](https://badgen.net/npm/v/dragonrend)](https://www.npmjs.com/package/dragonrend)
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/EgorRepnikov/dragonrend/blob/master/LICENSE)
 
 # Dragonrend
