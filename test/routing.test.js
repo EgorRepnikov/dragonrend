@@ -5,8 +5,7 @@ describe('Router', () => {
   const handler = (ctx) => ctx.test = true
 
   describe('define route with prefix and execute', () => {
-    const { GET, router } = routing({ prefix: '/api' })
-    GET('/test', handler)
+    const router = routing({ prefix: '/api' }).GET('/test', handler)
     it('GET /api/test', () => {
       const ctx = {
         request: { method: 'GET', originalUrl: '/api/test' },
@@ -17,8 +16,7 @@ describe('Router', () => {
     })
   })
   describe('execute handler by route', () => {
-    const { GET, router } = routing()
-    GET('/test', handler)
+    const router = routing().GET('/test', handler)
     it('GET /test', async () => {
       const ctx = {
         request: { method: 'GET', originalUrl: '/test' },
@@ -29,7 +27,7 @@ describe('Router', () => {
     })
   })
   describe('not found', () => {
-    const { router } = routing({
+    const router = routing({
       notFoundHandler: () => 'mock'
     })
     it('GET /not/found', () => {

@@ -7,14 +7,14 @@ const rp = require('request-promise').defaults({
 const Dragonrend = require('../lib/Dragonrend')
 
 describe('Request', () => {
-  const dragonrend = new Dragonrend()
-    .get('/default', () => {})
-    .get('/status', ({ response }) => response.status(201).text(''))
-    .get('/json-body', ({ response }) => response.json({ message: 'test' }))
-    .get('/text-body', ({ response }) => response.text('test'))
-    .get('/html-body', ({ response }) => response.html('<h1>test</h1>'))
-    .get('/status-json-body', ({ response }) =>
-      response.status(201).json({ message: 'test' }))
+  const dragonrend = { GET } = new Dragonrend()
+  GET('/default', () => {})
+  GET('/status', ({ response }) => response.status(201).text(''))
+  GET('/json-body', ({ response }) => response.json({ message: 'test' }))
+  GET('/text-body', ({ response }) => response.text('test'))
+  GET('/html-body', ({ response }) => response.html('<h1>test</h1>'))
+  GET('/status-json-body', ({ response }) =>
+    response.status(201).json({ message: 'test' }))
 
   beforeAll(async () => await dragonrend.start(8080))
   afterAll(async () => await dragonrend.stop())

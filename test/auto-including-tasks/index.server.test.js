@@ -26,12 +26,6 @@ describe('Auto Including Tasks', () => {
       expect(res.statusCode).toEqual(200)
       expect(res.body).toEqual('router2')
     })
-
-    it('GET /routing (routing)', async () => {
-      const res = await rp('routing')
-      expect(res.statusCode).toEqual(200)
-      expect(res.body).toEqual('routing')
-    })
   })
 
   describe('Middleware', () => {

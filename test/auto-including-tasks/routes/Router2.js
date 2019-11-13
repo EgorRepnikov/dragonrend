@@ -1,7 +1,5 @@
-const Router = require('../../../lib/Router')
+const { routing } = require('../../../')
 
-const router = new Router()
+module.exports = { GET } = routing()
 
-router.get('/router2', (ctx) => ctx.response.text('router2'))
-
-module.exports = router
+GET('/router2', (ctx) => ctx.response.text('router2'))

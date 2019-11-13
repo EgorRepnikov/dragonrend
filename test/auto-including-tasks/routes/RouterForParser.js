@@ -1,7 +1,5 @@
-const Router = require('../../../lib/Router')
+const { routing } = require('../../../')
 
-const router = new Router()
+module.exports = { POST } = routing()
 
-router.post('/parser', (ctx) => ctx.response.text(ctx.request.body))
-
-module.exports = router
+POST('/parser', (ctx) => ctx.response.text(ctx.request.body))

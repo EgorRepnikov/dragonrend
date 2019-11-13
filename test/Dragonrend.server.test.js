@@ -8,9 +8,9 @@ const Dragonrend = require('../lib/Dragonrend')
 
 describe('Dragonrend Server', () => {
   describe('default', () => {
-    const dragonrend = new Dragonrend()
-      .get('/default', () => {})
-      .get('/error', () => { throw new Error() })
+    const dragonrend = { GET } = new Dragonrend()
+    GET('/default', () => {})
+    GET('/error', () => { throw new Error() })
 
     beforeAll(async () => await dragonrend.start(8080))
     afterAll(async () => await dragonrend.stop())
@@ -32,14 +32,13 @@ describe('Dragonrend Server', () => {
     })
   })
   describe('custom', () => {
-    const dragonrend = new Dragonrend()
-      .setErrorHandler((e, { response }) => {
-        response.status(500).json({ error: e.message })
+    const dragonrend = { GET } = new Dragonrend()
+      .setErrorHandler((e, ctx) => {
+        ctx.response.status(500).json({ error: e.message })
       })
-      .get('/json', ({ response }) => {
-        response.status(200).json({ message: 'Hello There' })
-      })
-      .get('/error', () => { throw new Error('Mock') })
+    GET('/json', (ctx) => 
+        ctx.response.status(200).json({ message: 'Hello There' }))
+    GET('/error', () => { throw new Error('Mock') })
 
     beforeAll(async () => await dragonrend.start(8080))
     afterAll(async () => await dragonrend.stop())

@@ -7,9 +7,9 @@ const rp = require('request-promise').defaults({
 const Dragonrend = require('../lib/Dragonrend')
 
 describe('Request', () => {
-  const dragonrend = new Dragonrend()
-    .get('/test', ({ request, response }) => response.json(request))
-    .post('/test-body', ({ request, response }) => response.json(request))
+  const dragonrend = { GET, POST } = new Dragonrend()
+  GET('/test', ({ request, response }) => response.json(request))
+  POST('/test-body', ({ request, response }) => response.json(request))
 
   beforeAll(async () => await dragonrend.start(8080))
   afterAll(async () => await dragonrend.stop())
