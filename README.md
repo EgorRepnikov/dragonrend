@@ -362,6 +362,9 @@ const app = new Dragonrend({
 })
 ```
 
+# Example
+You can find an example of using the framework by [link](https://github.com/EgorRepnikov/artaeum/tree/master/profile). This is a `Profile` microservice of a simple microservice social network [Artaeum](https://github.com/EgorRepnikov/artaeum).
+
 # Author
 **Egor Repnikov** - [GitHub](https://github.com/EgorRepnikov)
 
