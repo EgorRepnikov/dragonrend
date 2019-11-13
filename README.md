@@ -19,7 +19,7 @@ const { Dragonrend } = require('dragonrend')
 
 const app = new Dragonrend()
 
-app.get('/', (ctx) => {
+app.GET('/', (ctx) => {
   ctx.response.json({ message: 'Hi There' })
 })
 
@@ -144,14 +144,21 @@ Method stops server and returns `Promise`.
 dragonrend.stop().then(() => console.log('Stopped'))
 ```
 
-## Router
-`Router` is a wrapper over [Impetuous](https://github.com/EgorRepnikov/impetuous).
+## Routing
+Routing is performed using [Impetuous](https://github.com/EgorRepnikov/impetuous).
 
-### constructor
-Gets the object with a prefix (not required), which appends to all routes of that instance of Router.
+### routing function
+Gets the object with a `prefix` and `not found handler`, which appends to all routes of that instance of Router.
+
+Returns prepared `Router` instance.
 
 ```js
-const router = new Router({ prefix: '/api' })
+const router = routing({
+  prefix: '/api',
+  notFoundHandler() {
+    ctx.response.status(404).text('Not Found')
+  }
+})
 ```
 
 ### GET PUT PATCH POST DELETE HEAD OPTIONS (path, fn)
@@ -161,14 +168,16 @@ const router = new Router({ prefix: '/api' })
 
 These methods add request handlers.
 
+For example, a file with routes may look like this:
+
 ```js
-const { Router } = require('dragonrend')
+const { routing } = require('dragonrend')
 
-const router = new Router()
+const { GET, POST } = module.exports = routing()
 
-router.get('/path/:param', async (ctx) => {})
+GET('/path/:param', async (ctx) => {})
 
-router.post('/path', ({ request, response }) => {})
+GET('/path', ({ request, response }) => {})
 ```
 
 ### merge(...routers)
@@ -177,24 +186,11 @@ router.post('/path', ({ request, response }) => {})
 Combines one or more instances of Router.
 
 ```js
-const router1 = new Router({ prefix: '/base' })
-const router2 = new Router()
-const router3 = new Router({ prefix: '/api' })
+const router1 = routing({ prefix: '/base' })
+const router2 = routing()
+const router3 = routing({ prefix: '/api' })
 
 router1.merge(router2, router3)
-```
-
-### setNotFoundHandler(fn)
-`fn: Function`
-
-Adds handler in case a route will not found.
-
-```js
-const router = new Router()
-
-router.setNotFoundHandler((ctx) => {
-  ctx.response.status(404).text('Not Found')
-})
 ```
 
 ### Instance of Router should be added to Dragonrend
@@ -202,44 +198,13 @@ router.setNotFoundHandler((ctx) => {
 
 ```js
 const dragonrend = new Dragonrend()
-const router = new Router()
+const router = routing()
 // add some handlers to router
 dragonrend.merge(router)
 // start server...
 ```
 
 > **Feature:** Instances of Router are added automatically to application, if you add them to the `routes` directory at the root of project. Router file should export `Router` object.
-
-## Routify Function
-`routify` function creates a router very easily and productively. This is the recommended way to declare a router.
-
-```js
-const { routify, GET, POST } = require('dragonrend')
-
-const router = routify()(
-  GET('/path', (ctx) => ctx.response.text('OK')),
-  POST('/path',
-    ctx => {
-      // Handle something
-    },
-    ctx => ctx.response.text('OK'))
-)
-```
-
-Example with options:
-
-```js
-const { routify } = require('dragonrend')
-
-const router = routify({
-  prefix: '/api',
-  notFoundHandler(ctx) {
-    ctx.response.status(404).text('Not Found')
-  }
-})(
-  // Declare your routes here
-)
-```
 
 ## Request
 Request objects is added to `context` by default.
