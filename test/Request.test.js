@@ -4,15 +4,16 @@ const rp = require('request-promise').defaults({
   baseUrl: 'http://localhost:8080/'
 })
 
-const Dragonrend = require('../lib/Dragonrend')
+const { dragonrend } = require('../lib/Dragonrend')
 
 describe('Request', () => {
-  const dragonrend = { GET, POST } = new Dragonrend()
+  const app = dragonrend()
+  const { GET, POST } = app
   GET('/test', ({ request, response }) => response.json(request))
   POST('/test-body', ({ request, response }) => response.json(request))
 
-  beforeAll(async () => await dragonrend.start(8080))
-  afterAll(async () => await dragonrend.stop())
+  beforeAll(async () => await app.start(8080))
+  afterAll(async () => await app.stop())
 
   it('get request', async () => {
     const res = await rp.get('test', { json: true })

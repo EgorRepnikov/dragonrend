@@ -4,10 +4,11 @@ const rp = require('request-promise').defaults({
   baseUrl: 'http://localhost:8080/'
 })
 
-const Dragonrend = require('../lib/Dragonrend')
+const { dragonrend } = require('../lib/Dragonrend')
 
 describe('Request', () => {
-  const dragonrend = { GET } = new Dragonrend()
+  const app = dragonrend()
+  const { GET } = app
   GET('/default', () => {})
   GET('/status', ({ response }) => response.status(201).text(''))
   GET('/json-body', ({ response }) => response.json({ message: 'test' }))
@@ -16,8 +17,8 @@ describe('Request', () => {
   GET('/status-json-body', ({ response }) =>
     response.status(201).json({ message: 'test' }))
 
-  beforeAll(async () => await dragonrend.start(8080))
-  afterAll(async () => await dragonrend.stop())
+  beforeAll(async () => await app.start(8080))
+  afterAll(async () => await app.stop())
 
   it('get default response', async () => {
     const res = await rp.get('default')

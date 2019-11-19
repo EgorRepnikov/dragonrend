@@ -1,7 +1,7 @@
-const Dragonrend = require('./lib/Dragonrend')
+const { dragonrend } = require('./lib/dragonrend')
 const { routing } = require('./lib/routing')
 
 module.exports = {
-  Dragonrend,
+  dragonrend,
   routing
 }

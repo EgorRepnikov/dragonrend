@@ -4,16 +4,17 @@ const rp = require('request-promise').defaults({
   baseUrl: 'http://localhost:8080/'
 })
 
-const Dragonrend = require('../lib/Dragonrend')
+const { dragonrend } = require('../lib/Dragonrend')
 
 describe('Dragonrend Server', () => {
   describe('default', () => {
-    const dragonrend = { GET } = new Dragonrend()
+    const app = dragonrend()
+    const { GET } = app
     GET('/default', () => {})
     GET('/error', () => { throw new Error() })
 
-    beforeAll(async () => await dragonrend.start(8080))
-    afterAll(async () => await dragonrend.stop())
+    beforeAll(async () => await app.start(8080))
+    afterAll(async () => await app.stop())
 
     it('GET /not/found', async () => {
       const res = await rp('not/found')
@@ -32,16 +33,18 @@ describe('Dragonrend Server', () => {
     })
   })
   describe('custom', () => {
-    const dragonrend = { GET } = new Dragonrend()
-      .setErrorHandler((e, ctx) => {
+    const app = dragonrend({
+      errorHandler(e, ctx) {
         ctx.response.status(500).json({ error: e.message })
-      })
+      }
+    })
+    const { GET } = app
     GET('/json', (ctx) => 
         ctx.response.status(200).json({ message: 'Hello There' }))
     GET('/error', () => { throw new Error('Mock') })
 
-    beforeAll(async () => await dragonrend.start(8080))
-    afterAll(async () => await dragonrend.stop())
+    beforeAll(async () => await app.start(8080))
+    afterAll(async () => await app.stop())
 
     it('GET /json', async () => {
       const res = await rp('json', { json: true })

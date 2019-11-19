@@ -4,15 +4,17 @@ const rp = require('request-promise').defaults({
   baseUrl: 'http://localhost:8080/'
 })
 
-const Dragonrend = require('../../lib/Dragonrend')
+const { dragonrend } = require('../../lib/Dragonrend')
 
 describe('Auto Including Tasks', () => {
-  const dragonrend = new Dragonrend({
-    rootDir: __dirname
+  const app = dragonrend({
+    autoIncluding: {
+      rootDir: __dirname
+    }
   })
 
-  beforeAll(async () => await dragonrend.start(8080))
-  afterAll(async () => await dragonrend.stop())
+  beforeAll(async () => await app.start(8080))
+  afterAll(async () => await app.stop())
 
   describe('Routers', () => {
     it('GET /router1 (Router1)', async () => {
