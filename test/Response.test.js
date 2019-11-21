@@ -4,7 +4,7 @@ const rp = require('request-promise').defaults({
   baseUrl: 'http://localhost:8080/'
 })
 
-const { dragonrend } = require('../lib/Dragonrend')
+const { dragonrend } = require('../')
 
 describe('Request', () => {
   const app = dragonrend()
