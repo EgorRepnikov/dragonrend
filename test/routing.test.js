@@ -26,10 +26,21 @@ describe('Router', () => {
       expect(ctx.test).toEqual(true)
     })
   })
-  describe('not found', () => {
+  describe('not found (set via config)', () => {
     const router = routing({
       notFoundHandler: () => 'mock'
     })
+    it('GET /not/found', () => {
+      const ctx = {
+        request: { method: 'GET', originalUrl: '/not/found' }
+      }
+      expect(router[executeS](ctx)).toEqual('mock')
+    })
+  })
+  describe('not found (set via function)', () => {
+    const router = routing()
+    const { NOT_FOUND } = router
+    NOT_FOUND(() => 'mock')
     it('GET /not/found', () => {
       const ctx = {
         request: { method: 'GET', originalUrl: '/not/found' }
