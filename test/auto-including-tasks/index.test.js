@@ -4,7 +4,7 @@ const rp = require('request-promise').defaults({
   baseUrl: 'http://localhost:8080/'
 })
 
-const { dragonrend } = require('../../lib/dragonrend')
+const { dragonrend } = require('../../lib/Dragonrend')
 
 describe('Auto Including Tasks', () => {
   const app = dragonrend({
