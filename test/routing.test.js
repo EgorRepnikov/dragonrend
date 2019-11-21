@@ -1,4 +1,4 @@
-const { routing } = require('../lib/routing')
+const { routing } = require('..')
 const { executeS } = require('../lib/symbols')
 
 describe('Router', () => {

@@ -1,4 +1,4 @@
-const { routing } = require('../../../lib/routing')
+const { routing } = require('../../..')
 
 module.exports = { POST } = routing()
 
