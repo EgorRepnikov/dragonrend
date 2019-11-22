@@ -4,7 +4,7 @@ const rp = require('request-promise').defaults({
   baseUrl: 'http://localhost:8080/'
 })
 
-const { dragonrend } = require('..')
+const { dragonrend, json } = require('..')
 
 describe('Dragonrend Server', () => {
   describe('default', () => {
@@ -61,6 +61,24 @@ describe('Dragonrend Server', () => {
     const app = dragonrend()
     const { CATCH_ERROR, GET } = app
     CATCH_ERROR((e, ctx) => ctx.response.status(500).json({ error: e.message }))
+    GET('/error', () => { throw new Error('Mock') })
+
+    beforeAll(async () => await app.start(8080))
+    afterAll(async () => await app.stop())
+
+    it('GET /error', async () => {
+      const res = await rp('error', { json: true })
+      expect(res.statusCode).toEqual(500)
+      expect(res.body).toEqual({ error: 'Mock' })
+    })
+  })
+  describe('error (returns response)', () => {
+    const app = dragonrend()
+    const { CATCH_ERROR, GET } = app
+    CATCH_ERROR((e, _) => json({
+      status: 500,
+      body: { error: e.message }
+    }))
     GET('/error', () => { throw new Error('Mock') })
 
     beforeAll(async () => await app.start(8080))
