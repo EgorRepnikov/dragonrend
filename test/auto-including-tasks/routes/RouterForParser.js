@@ -1,5 +1,9 @@
 const { routing } = require('../../..')
 
-module.exports = { POST } = routing()
+const routes = routing()
+
+const { POST } = routes
 
 POST('/parser', (ctx) => ctx.response.text(ctx.request.body))
+
+module.exports = routes
