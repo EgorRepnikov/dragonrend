@@ -2,13 +2,13 @@ const { routing } = require('..')
 const { executeS } = require('../lib/symbols')
 
 describe('Router', () => {
-  const handler = (ctx) => ctx.test = true
+  const handler = ctx => ctx.test = true
 
   describe('define route with prefix and execute', () => {
     const router = routing({ prefix: '/api' }).GET('/test', handler)
     it('GET /api/test', () => {
       const ctx = {
-        request: { method: 'GET', originalUrl: '/api/test' },
+        request: { method: 'GET', url: '/api/test' },
         test: false
       }
       router[executeS](ctx)[0](ctx)
@@ -19,7 +19,7 @@ describe('Router', () => {
     const router = routing().GET('/test', handler)
     it('GET /test', async () => {
       const ctx = {
-        request: { method: 'GET', originalUrl: '/test' },
+        request: { method: 'GET', url: '/test' },
         test: false
       }
       router[executeS](ctx)[0](ctx)
@@ -32,7 +32,7 @@ describe('Router', () => {
     })
     it('GET /not/found', () => {
       const ctx = {
-        request: { method: 'GET', originalUrl: '/not/found' }
+        request: { method: 'GET', url: '/not/found' }
       }
       expect(router[executeS](ctx)).toEqual('mock')
     })
@@ -43,7 +43,7 @@ describe('Router', () => {
     NOT_FOUND(() => 'mock')
     it('GET /not/found', () => {
       const ctx = {
-        request: { method: 'GET', originalUrl: '/not/found' }
+        request: { method: 'GET', url: '/not/found' }
       }
       expect(router[executeS](ctx)).toEqual('mock')
     })

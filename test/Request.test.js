@@ -20,7 +20,7 @@ describe('Request', () => {
     expect(res.statusCode).toEqual(200)
     expect(res.body).toEqual({
       method: 'GET',
-      originalUrl: '/test',
+      url: '/test',
       headers: {
         accept: 'application/json',
         host: 'localhost:8080',
@@ -37,7 +37,7 @@ describe('Request', () => {
     expect(res.statusCode).toEqual(200)
     expect(res.body).toEqual({
       method: 'POST',
-      originalUrl: '/test-body',
+      url: '/test-body',
       headers: {
         accept: 'application/json',
         'content-type': 'application/json',
@@ -46,7 +46,6 @@ describe('Request', () => {
         connection: 'close'
       },
       query: {},
-      rawBody: '{"message":"Test"}',
       body: { message: 'Test' }
     })
   })
@@ -57,14 +56,13 @@ describe('Request', () => {
     expect(res.statusCode).toEqual(200)
     expect(JSON.parse(res.body)).toEqual({
       method: 'POST',
-      originalUrl: '/test-body',
+      url: '/test-body',
       headers: {
         'content-length': '4',
         host: 'localhost:8080',
         connection: 'close'
       },
       query: {},
-      rawBody: 'Test',
       body: 'Test'
     })
   })

@@ -24,7 +24,7 @@ describe('Utils', () => {
       let counter = 0
       const fns = reduce([
         () => counter++,
-        (ctx) => {
+        ctx => {
           counter++
           ctx.response[isSentS] = true
         },
