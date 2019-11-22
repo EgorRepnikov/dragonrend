@@ -1,5 +1,5 @@
 const { reduce } = require('../lib/utils')
-const { isSentS } = require('../lib/symbols')
+const { isSentS, sendS } = require('../lib/symbols')
 
 describe('Utils', () => {
   describe('reduce function', () => {
@@ -10,7 +10,12 @@ describe('Utils', () => {
         () => counter++,
         () => counter++
       ], {
-        response: { [isSentS]: false }
+        response: {
+          [isSentS]: false,
+          status() {},
+          header() {},
+          [sendS]() {}
+        }
       })
       await fns
       expect(counter).toEqual(3)
