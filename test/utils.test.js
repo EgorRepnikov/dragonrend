@@ -1,4 +1,4 @@
-const { reduce } = require('../lib/utils')
+const { reduce, wrapMiddleware } = require('../lib/utils')
 const { isSentS, sendS } = require('../lib/symbols')
 
 describe('Utils', () => {
@@ -49,6 +49,23 @@ describe('Utils', () => {
         expect(e.message).toEqual('Error')
       }
       expect(counter).toEqual(0)
+    })
+  })
+  describe('wrapMiddleware function', () => {
+    it('wrap mock middleware and execute', async () => {
+      let isSent = false
+      const ctx = {
+        response: {
+          status(status) {},
+          header(header) {},
+          [sendS](body) {
+            isSent = true
+          }
+        }
+      }
+      const middleware = () => ({})
+      await wrapMiddleware(middleware)(ctx)
+      expect(isSent).toBe(true)
     })
   })
 })
