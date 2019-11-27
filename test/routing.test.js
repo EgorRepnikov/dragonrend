@@ -27,25 +27,33 @@ describe('Router', () => {
     })
   })
   describe('not found (set via config)', () => {
-    const router = routing({
-      notFoundHandler: () => 'mock'
-    })
-    it('GET /not/found', () => {
+    it('GET /not/found', async () => {
+      let isSent = false
+      const router = routing({
+        notFoundHandler() {
+          isSent = true
+        }
+      })
       const ctx = {
         request: { method: 'GET', url: '/not/found' }
       }
-      expect(router[executeS](ctx)).toEqual('mock')
+      await router[executeS](ctx)
+      expect(isSent).toBe(true)
     })
   })
   describe('not found (set via function)', () => {
-    const router = routing()
-    const { NOT_FOUND } = router
-    NOT_FOUND(() => 'mock')
-    it('GET /not/found', () => {
+    it('GET /not/found', async () => {
+      let isSent = false
+      const router = routing()
+      const { NOT_FOUND } = router
+      NOT_FOUND(() => {
+        isSent = true
+      })
       const ctx = {
         request: { method: 'GET', url: '/not/found' }
       }
-      expect(router[executeS](ctx)).toEqual('mock')
+      await router[executeS](ctx)
+      expect(isSent).toBe(true)
     })
   })
 })
