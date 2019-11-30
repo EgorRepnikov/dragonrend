@@ -216,6 +216,23 @@ const router = routing({
 })
 ```
 
+### NotFound handler
+Also NotFound-handler can be setted via method or function.
+
+```js
+const router = routing()
+
+router.setNotFoundHandler(ctx => {
+  ctx.response.status(404).text('Not Found')
+})
+```
+
+```js
+const { NOT_FOUND } = routing()
+
+NOT_FOUND(ctx => ctx.response.status(404).text('Not Found'))
+```
+
 ### Classical Express-like routing
 Router instance has `get, put, patch, post, delete, head, options (path: String, fn: Function)` methods.
 
@@ -232,7 +249,7 @@ module.exports = router
 ```
 
 ### GET PUT PATCH POST DELETE HEAD OPTIONS (path: String, fn: Function)
-These methods add request handlers.
+These functions add request handlers.
 
 For example, a file with routes may look like this:
 
@@ -313,10 +330,10 @@ Response objects is added to `context` by default.
 |---|---|
 | header(key: String, value: String) | Adds header key-value pair to Response |
 | status(statusCode: Number) | Sets custom status code to Response, default value is `200` |
-| json(data: Object) | Sends request with `application/json` body |
-| text(data: String) | Sends request with `text/plain` body |
-| html(data: String) | Sends request with `text/html` body |
-| send(data: String|Buffer, contentType: String) | Sends request with custom body |
+| json(data: Object) | Sends response with `application/json` body |
+| text(data: String) | Sends response with `text/plain` body |
+| html(data: String) | Sends response with `text/html` body |
+| send(data: String\|Buffer, contentType: String) | Sends response with custom body |
 
 ```js
 app.middleware({ response } => {
@@ -347,7 +364,7 @@ app.middleware(async ctx => {
 })
 ```
 
-There is helper functions:
+There are helper-functions:
 
 ```js
 const { dragonrend, json, html, text } = require('dragonrend')
@@ -393,13 +410,14 @@ const app = dragonrend({
 ```js
 // There are default values of options
 const app = dragonrend({
-  autoIncludeRoutes: true,
-  routesDir: 'routes',
-  autoIncludeMiddleware: true,
-  middlewareDir: 'middleware',
-  autoIncludeContentTypeParsers: true,
-  contentTypeParsersDir: 'parsers',
-  rootDir: process.cwd()
+  autoIncluding: {
+    routesDir: 'routes',
+    autoIncludeMiddleware: true,
+    middlewareDir: 'middleware',
+    autoIncludeContentTypeParsers: true,
+    contentTypeParsersDir: 'parsers',
+    rootDir: process.cwd()
+  }
 })
 ```
 
@@ -434,7 +452,7 @@ module.exports = ctx => {
 ```
 
 ### Router
-Router file should export `Router` object.
+Router file should export `Router` instance.
 
 ```js
 const router = routing()
