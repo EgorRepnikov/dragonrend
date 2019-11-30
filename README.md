@@ -13,19 +13,24 @@ $ npm install dragonrend
 ```
 
 # Usage
-
 ```js
-const { Dragonrend } = require('dragonrend')
+const { dragonrend } = require('dragonrend')
 
-const app = new Dragonrend()
+const app = dragonrend()
 
-app.GET('/', (ctx) => {
-  ctx.response.json({ message: 'Hi There' })
-})
+app.get('/', ctx => ctx.response.json({ message: 'Hi There' }))
 
 app.start(8080).then(() => console.log('Server has been started'))
-// or cluster
-app.start({ port: 8080, cluster: true })
+```
+
+```js
+const { dragonrend } = require('dragonrend')
+
+const { GET, START } = dragonrend()
+
+GET('/', ctx => ctx.response.json({ message: 'Hi There' }))
+
+START(8080, () => console.log('Server has been started'))
 ```
 
 # API
@@ -34,114 +39,164 @@ app.start({ port: 8080, cluster: true })
 All middleware functions and handlers get the `context` object.
 Context contains the `request` and `response` objects by default.
 
-## Dragonrend
-`Dragonrend` **inherits** `Router` (`Router` is a wrapper over [Impetuous](https://github.com/EgorRepnikov/impetuous)).
+## dragonrend(options)
+This is builder function, which returns Dragonrend instance.
 
-### context(key, value)
-`key: String`
+```js
+const { dragonrend } = require('dragonrend')
 
-`value: Any`
+const app = dragonrend({
+  server: false, // your server instance, default: false
+  https: false, // object with `key` and `cert` like `https.createServer`, default: false
+  http2: false, // true or false, default: false
+  errorHandler(e, ctx) { // this is default error handler
+    console.log(e)
+    ctx.response.status(500).text('Internal Server Error')
+  },
+  routing: { // default: {}
+    prefix: '/api', // default: ''
+    notFoundHandler(ctx) { // this is default not found handler
+      ctx.response.status(404).text('Not Found')
+    }
+  },
+  autoIncluding: { // default: false
+    rootDir: 'dir', // default: process.cwd() (Node.js process directory)
+    autoIncludeRoutes: true, // this is default value
+    routesDir: 'routes', // this is default value
+    autoIncludeMiddleware: true, // this is default value
+    middlewareDir: 'middleware', // this is default value
+    autoIncludeContentTypeParsers: true, // this is default value
+    contentTypeParsersDir: 'parsers' // this is default value
+  }
+})
+```
 
+## Dragonrend Instance
+`Dragonrend` **inherits** `Router`.
+
+### context(object: Object)
 Stores the values you can get from `ctx`.
 
 ```js
 // add value
-dragonrend.context('someValue', 'mock')
+app.context({
+  someValue: 'mock'
+})
 
-dragonrend.get('/path', (ctx) => {
+app.get('/path', ctx => {
   const { someValue } = ctx // <- and use it
 })
 ```
 
-### addContentTypeParser(contentType, fn)
-`contentType: String`
+```js
+const { CONTEXT, GET } = app
 
-`fn: Function` - `fn` gets request's body
+CONTEXT({
+  someValue: 'mock'
+})
 
+GET('/path', ctx => {
+  const { someValue } = ctx // <- and use it
+})
+```
+
+### addContentTypeParser(contentType: String, fn: Function)
 Method add parser of requests body by content type.
 
 ```js
-dragonrend.addContentTypeParser('text/plain', (body) => {
+app.addContentTypeParser('text/plain', body => {
   return body.toUpperCase()
 })
 ```
 
-> **Feature:** Parsers will be added automatically to application, if you put them in the `parsers` directory at the root of the project. Files should export an object like that:
-
 ```js
-module.exports = {
-  contentType: 'text/plain',
-  parse(body) {
-    // do something
-    return body
-  }
-}
+const { PARSER } = app
+
+PARSER('text/plain', body => body.toUpperCase())
 ```
 
-### middleware(...fns)
-`fns: Function|Array<Function>`
+> **Feature:** Parsers can be added to the application automatically. Read more in the section "Auto Including".
 
+### middleware(...fns: Function)
 Adds handler which will called before Router's handler.
 
 ```js
 // async/await or return promise
-dragonrend.middleware(async (ctx) => {
+app.middleware(async ctx => {
   // do something
 })
-```
 
-> **Feature:** Middleware-functions will be added automatically to application, if you put them in the `middleware` directory at the root of the project. Files should export a function by default.
+app.middleware(
+  ctx => {},
+  ctx => {}
+)
+```
 
 ```js
-module.exports = ctx => {
+const { MIDDLEWARE } = app
+
+MIDDLEWARE(async ctx => {
   // do something
-}
+})
+
+MIDDLEWARE(
+  ctx => {},
+  ctx => {}
+)
 ```
 
-### setErrorHandler(fn)
-`fn: Function`
+> **Feature:** Middleware-functions can be added to the application automatically. Read more in the section "Auto Including".
 
+### setErrorHandler(fn: Function)
 `fn` should have `(error, ctx)` signature. `error` is an error occurred, `ctx` is context.
 
 Sets error handler.
 By default Dragonrend returns status 500 and body `{"error":"Internal Server Error"}`.
 
 ```js
-dragonrend.setErrorHandler((error, ctx) => {
+app.setErrorHandler((error, ctx) => {
   ctx.response.status(500).json({ error: error.message })
 })
 ```
 
-### start(portOrOptions)
+```js
+const { CATCH_ERROR } = app
 
-`portOrOptions: Number|Object`
+CATCH_ERROR((error, ctx) => {
+  ctx.response.status(500).json({ error: error.message })
+})
+```
 
-Method gets port number or options object like [Net server.listen()](https://nodejs.org/api/net.html#net_server_listen_options_callback). Method returns `Promise`.
+### start(portOrOptions: Number|Object)
+Method gets port number or options object like [Net server.listen()](https://nodejs.org/api/net.html#net_server_listen_options_callback). Method returns `Promise`, also it is possible to use callback.
 
 ```js
-dragonrend.start(8080).then(() => console.log('Started'))
+app.start(8080).then(() => console.log('Started'))
 // or
-dragonrend.start({
+app.start({
   host: 'localhost',
   port: 80,
   exclusive: true
 }).then(() => console.log('Started'))
 ```
 
-If you need to start a cluster, then `options` object should contain field `cluster: true`. Also you may set specific count of workers `workersCount: 2` (default value is `os.cpus().length`).
-
 ```js
-dragonrend.start({
-  port: 80,
-  cluster: true
-}).then(() => console.log('Cluster is starting'))
+const { START } = app
+
+START(8080, () => console.log('Started'))
 ```
 
 ### stop()
-Method stops server and returns `Promise`.
+Method stops server and returns `Promise`, also it is possible to use callback.
 
 ```js
 dragonrend.stop().then(() => console.log('Stopped'))
+```
+
+```js
+const { STOP } = app
+
+STOP(() => console.log('Stopped'))
 ```
 
 ## Routing
@@ -150,7 +205,7 @@ Routing is performed using [Impetuous](https://github.com/EgorRepnikov/impetuous
 ### routing function
 Gets the object with a `prefix` and `not found handler`, which appends to all routes of that instance of Router.
 
-Returns prepared `Router` instance.
+Returns prepared `Router` instance (`Router` is a wrapper over [Impetuous](https://github.com/EgorRepnikov/impetuous)).
 
 ```js
 const router = routing({
@@ -161,11 +216,22 @@ const router = routing({
 })
 ```
 
-### GET PUT PATCH POST DELETE HEAD OPTIONS (path, fn)
-`path: String`
+### Classical Express-like routing
+Router instance has `get, put, patch, post, delete, head, options (path: String, fn: Function)` methods.
 
-`fn: Function` - `fn` gets `ctx`
+```js
+const { routing } = require('dragonrend')
 
+const router = routing()
+
+router.get('/path/:param', async ctx => {})
+
+router.post('/path', ({ request, response }) => {})
+
+module.exports = router
+```
+
+### GET PUT PATCH POST DELETE HEAD OPTIONS (path: String, fn: Function)
 These methods add request handlers.
 
 For example, a file with routes may look like this:
@@ -177,12 +243,10 @@ const { GET, POST } = module.exports = routing()
 
 GET('/path/:param', async (ctx) => {})
 
-GET('/path', ({ request, response }) => {})
+POST('/path', ({ request, response }) => {})
 ```
 
-### merge(...routers)
-`routers: Router|Array<Router>`
-
+### merge(...routers: Router)
 Combines one or more instances of Router.
 
 ```js
@@ -193,147 +257,132 @@ const router3 = routing({ prefix: '/api' })
 router1.merge(router2, router3)
 ```
 
+```js
+const router1 = routing({ prefix: '/base' })
+const router2 = routing()
+const router3 = routing({ prefix: '/api' })
+
+const { MERGE } = router1
+
+MERGE(router2, router3)
+```
+
 ### Instance of Router should be added to Dragonrend
 `Dragonrend` inherits `Router`, therefore it has method `merge`.
 
 ```js
-const dragonrend = new Dragonrend()
+const app = dragonrend()
 const router = routing()
 // add some handlers to router
-dragonrend.merge(router)
+app.merge(router)
 // start server...
 ```
 
-> **Feature:** Instances of Router are added automatically to application, if you add them to the `routes` directory at the root of project. Router file should export `Router` object.
+```js
+const { MERGE } = dragonrend()
+const router = routing()
+
+MERGE(router)
+```
+
+> **Feature:** Routers can be added to the application automatically. Read more in the section "Auto Including".
 
 ## Request
 Request objects is added to `context` by default.
 
-### headers
-`headers` is object, which contains all headers of request.
+Fields of Request instance:
+
+| Field | Description |
+|---|---|
+| headers | object, which contains all headers of request |
+| url | url from request |
+| method | request's method |
+| body | parsed request's body |
+| rawBody | no parsed request's body |
 
 ```js
-dragonrend.get((ctx) => {
-  const { headers } = ctx.request
-  console.log(headers['content-length'])
-})
-```
-
-### originalUrl
-`originalUrl` is url from request without changes.
-
-```js
-dragonrend.middleware((ctx) => {
-  const { originalUrl } = ctx.request
-  console.log(originalUrl)
-})
-```
-
-### method
-`method` is request's method.
-
-```js
-dragonrend.middleware((ctx) => {
-  const { method } = ctx.request
-  console.log(method)
-})
-```
-
-### body
-`body` is parsed request's body.
-
-```js
-dragonrend.middleware((ctx) => {
-  const { body } = ctx.request
-  console.log(body)
-})
-```
-
-### rawBody
-`rawBody` is no parsed request's body.
-
-```js
-dragonrend.middleware((ctx) => {
-  const { rawBody } = ctx.request
-  console.log(rawBody)
-})
+app.middleware(ctx => {
+  const { headers, url, method, body, rawBody } = ctx
+}
 ```
 
 ## Response
 Response objects is added to `context` by default.
 
-### header(key, value)
-`key: String`
-
-`value: String`
-
-Adds header key-value pair to Response.
+| Method | Description |
+|---|---|
+| header(key: String, value: String) | Adds header key-value pair to Response |
+| status(statusCode: Number) | Sets custom status code to Response, default value is `200` |
+| json(data: Object) | Sends request with `application/json` body |
+| text(data: String) | Sends request with `text/plain` body |
+| html(data: String) | Sends request with `text/html` body |
+| send(data: String|Buffer, contentType: String) | Sends request with custom body |
 
 ```js
-dragonrend.middleware((ctx) => {
-  ctx.response.header('x-total-count', '0').text('')
+app.middleware({ response } => {
+  response
+    .header('x-total-count', '0')
+    .status(201)
+    //
+    .json({ message: 'Hi There' })
+    // or
+    .text('Hi There')
+    // or
+    .html('<p>Hi There</p>')
+    // or
+    .send(imageBuffer, 'image/jpeg')
 })
 ```
 
-### status(statusCode)
-`statusCode: Number`
-
-Sets custom status code to Response. Default value is `200`.
+## Return Response
+In any function, whether it is Middleware or NotFound-handler, you can return an object with a response.
 
 ```js
-dragonrend.middleware((ctx) => {
-  ctx.response.status(201).text('OK')
+app.middleware(async ctx => {
+  return {
+    status: 201 // default: 200,
+    headers: { 'content-type': 'text/plain' } // default: {},
+    body: 'body' // default: ''
+  }
 })
 ```
 
-### json(data)
-`data: Object`
-
-Sends request with `application/json` body.
+There is helper functions:
 
 ```js
-dragonrend.middleware((ctx) => {
-  ctx.response.json({ message: 'Hi There' })
-})
-```
+const { dragonrend, json, html, text } = require('dragonrend')
 
-### text(data)
-`data: String`
+const { GET } = dragonrend()
 
-Sends request with `text/plain` body.
+GET(ctx => json({
+  body: { message: 'Hi There' }
+}))
 
-```js
-dragonrend.middleware((ctx) => {
-  ctx.response.text('Hi There')
-})
-```
+GET(ctx => html({
+  body: '<p>Hi There</p>'
+}))
 
-### html(data)
-`data: String`
-
-Sends request with `text/html` body.
-
-```js
-dragonrend.middleware((ctx) => {
-  ctx.response.html('<p>Hi There</p>')
-})
-```
-
-### send(data, contentType)
-`data: String|Buffer`
-
-`contentType: String`
-
-Sends request with custom body.
-
-```js
-dragonrend.middleware((ctx) => {
-  ctx.response.send(imageBuffer, 'image/jpeg')
-})
+GET(ctx => text({
+  body: 'Hi There'
+}))
 ```
 
 ## Auto Including
 Dragonrend supports auto including of Middleware-functions, Routers and Content Type Parsers. You should follow some rules for this functionality to work.
+
+This feature is disabled by default. You can enable it:
+
+```js
+const app = dragonrend({
+  autoIncluding: true
+})
+// or with options
+const app = dragonrend({
+  autoIncluding: {
+    // options
+  }
+})
+```
 
 - Files must be in specific directories at the root of project.
   - Middleware-functions in `middleware` directory.
@@ -342,8 +391,8 @@ Dragonrend supports auto including of Middleware-functions, Routers and Content 
 - The root directory is the directory that contains the file that is launched very first, i.e. directory of the Node.js process. If you start project with npm script (like `npm run start`) and all JS files are in `src` directory and main file is `src/index.js`, then root is `../src` and Auto Including will not work. In this case, it can be customized.
 
 ```js
-// There are default values
-const app = new Dragonrend({
+// There are default values of options
+const app = dragonrend({
   autoIncludeRoutes: true,
   routesDir: 'routes',
   autoIncludeMiddleware: true,
@@ -357,9 +406,44 @@ const app = new Dragonrend({
 If you use `src` directory for example as root of application, then you should set that args:
 
 ```js
-const app = new Dragonrend({
+const app = dragonrend({
   rootDir: __dirname
 })
+```
+
+### Parsers
+Files should export an object like that:
+
+```js
+module.exports = {
+  contentType: 'text/plain',
+  parse(body) {
+    // do something
+    return body
+  }
+}
+```
+
+### Middleware
+Files should export a function by default.
+
+```js
+module.exports = ctx => {
+  // do something
+}
+```
+
+### Router
+Router file should export `Router` object.
+
+```js
+const router = routing()
+
+module.exports = router
+```
+
+```js
+const { GET } = module.exports = routing()
 ```
 
 # Example
