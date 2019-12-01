@@ -13,7 +13,7 @@ $ npm install dragonrend
 ```
 
 # Usage
-The framework supports two options for writing code: classic and new. А new way allows you to create programs due to the extracted functions. This method helps to split the code into blocks that are easier to read. And in the following examples, the classic version will be shown first and then the new one. And in the following examples both design options will be shown.
+The framework supports two options for writing code: classic and new. А new way allows you to create programs due to the extracted functions. This method helps to split the code into blocks that are easier to read. And in the following examples both design options will be shown.
 
 ```js
 const { dragonrend } = require('dragonrend')
@@ -248,7 +248,7 @@ router.post('/path', ({ request, response }) => {})
 module.exports = router
 ```
 
-### GET PUT PATCH POST DELETE HEAD OPTIONS (path: String, fn: Function)
+### GET PUT PATCH POST DELETE HEAD OPTIONS (path: String, ...fn: Function)
 These functions add request handlers.
 
 For example, a file with routes may look like this:
