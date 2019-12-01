@@ -13,6 +13,8 @@ $ npm install dragonrend
 ```
 
 # Usage
+The framework supports two options for writing code: classic and new. А new way allows you to create programs due to the extracted functions. This method helps to split the code into blocks that are easier to read. And in the following examples, the classic version will be shown first and then the new one. And in the following examples both design options will be shown.
+
 ```js
 const { dragonrend } = require('dragonrend')
 
@@ -202,10 +204,8 @@ STOP(() => console.log('Stopped'))
 ## Routing
 Routing is performed using [Impetuous](https://github.com/EgorRepnikov/impetuous).
 
-### routing function
-Gets the object with a `prefix` and `not found handler`, which appends to all routes of that instance of Router.
-
-Returns prepared `Router` instance (`Router` is a wrapper over [Impetuous](https://github.com/EgorRepnikov/impetuous)).
+### routing(options: Object)
+Gets the object with a `prefix` and `not found handler`, which appends to all routes of that instance of Router. Returns prepared `Router` instance.
 
 ```js
 const router = routing({
@@ -233,8 +233,8 @@ const { NOT_FOUND } = routing()
 NOT_FOUND(ctx => ctx.response.status(404).text('Not Found'))
 ```
 
-### Classical Express-like routing
-Router instance has `get, put, patch, post, delete, head, options (path: String, fn: Function)` methods.
+### Classic Express-like routing
+Router instance has `get, put, patch, post, delete, head, options` methods with the same arguments `(path: String, ...fn: Function)`.
 
 ```js
 const { routing } = require('dragonrend')
@@ -380,11 +380,11 @@ const { dragonrend, json, html, text } = require('dragonrend')
 
 const { GET } = dragonrend()
 
-GET(ctx => json({ message: 'Hi There' }))
+GET('/json', ctx => json({ message: 'Hi There' }))
 
-GET(ctx => html(201, '<p>Hi There</p>'))
+GET('/html', ctx => html(201, '<p>Hi There</p>'))
 
-GET(ctx => text(201, { 'header': 'value' }, 'Hi There'))
+GET('/text', ctx => text(201, { 'header': 'value' }, 'Hi There'))
 ```
 
 ## Auto Including
@@ -428,12 +428,14 @@ If you use `src` directory for example as root of application, then you should s
 
 ```js
 const app = dragonrend({
-  rootDir: __dirname
+  autoIncluding: {
+    rootDir: __dirname
+  }
 })
 ```
 
 ### Parsers
-Files should export an object like that:
+Modules should export an object like that:
 
 ```js
 module.exports = {
@@ -446,7 +448,7 @@ module.exports = {
 ```
 
 ### Middleware
-Files should export a function by default.
+Modules should export a function.
 
 ```js
 module.exports = ctx => {
@@ -455,7 +457,7 @@ module.exports = ctx => {
 ```
 
 ### Router
-Router file should export `Router` instance.
+Router module should export `Router` instance.
 
 ```js
 const router = routing()

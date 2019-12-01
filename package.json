@@ -1,6 +1,6 @@
 {
   "name": "dragonrend",
-  "version": "0.17.2",
+  "version": "1.0.0",
   "description": "Node.js Web Framework",
   "main": "index.js",
   "scripts": {
@@ -12,6 +12,7 @@
   },
   "keywords": [
     "web",
+    "framework",
     "http",
     "router",
     "fast"
@@ -23,7 +24,7 @@
   },
   "homepage": "https://github.com/EgorRepnikov/dragonrend#readme",
   "dependencies": {
-    "impetuous": "^0.2.0"
+    "impetuous": "^0.2.2"
   },
   "devDependencies": {
     "jest": "^24.9.0",
