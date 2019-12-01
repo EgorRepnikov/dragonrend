@@ -17,13 +17,10 @@ describe('Return Response', () => {
     },
     body: ''
   }))
-  GET('/json-body', () => json({ body: { message: 'test' } }))
-  GET('/text-body', () => text({ body: 'test' }))
-  GET('/html-body', () => html({ body: '<h1>test</h1>' }))
-  GET('/status-json-body', () => json({
-    status: 201,
-    body: { message: 'test' }
-  }))
+  GET('/json-body', () => json({ message: 'test' }))
+  GET('/text-body', () => text('test'))
+  GET('/html-body', () => html('<h1>test</h1>'))
+  GET('/status-json-body', () => json(201, { message: 'test' }))
 
   beforeAll(async () => await app.start(8080))
   afterAll(async () => await app.stop())

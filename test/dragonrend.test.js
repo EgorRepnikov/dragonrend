@@ -75,10 +75,7 @@ describe('Dragonrend Server', () => {
   describe('error (returns response)', () => {
     const app = dragonrend()
     const { CATCH_ERROR, GET } = app
-    CATCH_ERROR((e, _) => json({
-      status: 500,
-      body: { error: e.message }
-    }))
+    CATCH_ERROR((e, _) => json(500, { error: e.message }))
     GET('/error', () => { throw new Error('Mock') })
 
     beforeAll(async () => await app.start(8080))

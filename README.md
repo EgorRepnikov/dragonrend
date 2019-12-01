@@ -364,24 +364,27 @@ app.middleware(async ctx => {
 })
 ```
 
-There are helper-functions:
+### Response helper-functions
+These functions set the content type and in the case of JSON stringify it.
+
+Functions have three call options.
+
+| Option | Description |
+| --- | --- |
+| json(body) | one parameter is the request body |
+| json(status, body) | two parameters are status and body in this order |
+| json(status, headers, body) | three parameters are status, headers and body in this order |
 
 ```js
 const { dragonrend, json, html, text } = require('dragonrend')
 
 const { GET } = dragonrend()
 
-GET(ctx => json({
-  body: { message: 'Hi There' }
-}))
+GET(ctx => json({ message: 'Hi There' }))
 
-GET(ctx => html({
-  body: '<p>Hi There</p>'
-}))
+GET(ctx => html(201, '<p>Hi There</p>'))
 
-GET(ctx => text({
-  body: 'Hi There'
-}))
+GET(ctx => text(201, { 'header': 'value' }, 'Hi There'))
 ```
 
 ## Auto Including
