@@ -470,7 +470,9 @@ const { GET } = module.exports = routing()
 ```
 
 # Example
-You can find an example of using the framework by [link](https://github.com/EgorRepnikov/artaeum/tree/master/profile). This is a `Profile` microservice of a simple microservice social network [Artaeum](https://github.com/EgorRepnikov/artaeum).
+You can find an example of using the framework by [link](https://github.com/EgorRepnikov/dragonrend-example). This is a simple Blog implementation with Articles API and JWT-authentication.
+
+Also there is a [Profile](https://github.com/EgorRepnikov/artaeum/tree/master/profile) microservice of a simple social network [Artaeum](https://github.com/EgorRepnikov/artaeum).
 
 # Author
 **Egor Repnikov** - [GitHub](https://github.com/EgorRepnikov)
