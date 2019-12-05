@@ -51,6 +51,7 @@ const app = dragonrend({
   server: false, // your server instance, default: false
   https: false, // object with `key` and `cert` like `https.createServer`, default: false
   http2: false, // true or false, default: false
+  noDelay: true, // disable Nagle algorithm, default: false
   errorHandler(e, ctx) { // this is default error handler
     console.log(e)
     ctx.response.status(500).text('Internal Server Error')
