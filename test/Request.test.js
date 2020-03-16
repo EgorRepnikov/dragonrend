@@ -26,6 +26,7 @@ describe('Request', () => {
         host: 'localhost:8080',
         connection: 'close'
       },
+      path: '/test',
       query: {}
     })
   })
@@ -45,6 +46,7 @@ describe('Request', () => {
         host: 'localhost:8080',
         connection: 'close'
       },
+      path: '/test-body',
       query: {},
       body: { message: 'Test' }
     })
@@ -62,6 +64,7 @@ describe('Request', () => {
         host: 'localhost:8080',
         connection: 'close'
       },
+      path: '/test-body',
       query: {},
       body: 'Test'
     })
