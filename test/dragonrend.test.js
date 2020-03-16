@@ -4,7 +4,7 @@ const rp = require('request-promise').defaults({
   baseUrl: 'http://localhost:8080/'
 })
 
-const { dragonrend, json } = require('..')
+const { dragonrend, wrap, json } = require('..')
 
 describe('Dragonrend Server', () => {
   describe('default', () => {
@@ -75,7 +75,7 @@ describe('Dragonrend Server', () => {
   describe('error (returns response)', () => {
     const app = dragonrend()
     const { CATCH_ERROR, GET } = app
-    CATCH_ERROR((e, _) => json(500, { error: e.message }))
+    CATCH_ERROR((e, ctx) => ctx.response.status(500).json({ error: e.message }))
     GET('/error', () => { throw new Error('Mock') })
 
     beforeAll(async () => await app.start(8080))
