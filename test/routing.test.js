@@ -1,5 +1,4 @@
 const { routing } = require('..')
-const { executeS } = require('../lib/symbols')
 
 describe('Router', () => {
   const handler = ctx => ctx.test = true
@@ -11,7 +10,7 @@ describe('Router', () => {
         request: { method: 'GET', url: '/api/test' },
         test: false
       }
-      router[executeS](ctx)[0](ctx)
+      router._execute(ctx)[0](ctx)
       expect(ctx.test).toBe(true)
     })
   })
@@ -22,7 +21,7 @@ describe('Router', () => {
         request: { method: 'GET', url: '/test' },
         test: false
       }
-      router[executeS](ctx)[0](ctx)
+      router._execute(ctx)[0](ctx)
       expect(ctx.test).toEqual(true)
     })
   })
@@ -37,7 +36,7 @@ describe('Router', () => {
       const ctx = {
         request: { method: 'GET', url: '/not/found' }
       }
-      await router[executeS](ctx)
+      await router._execute(ctx)
       expect(isSent).toBe(true)
     })
   })
@@ -52,7 +51,7 @@ describe('Router', () => {
       const ctx = {
         request: { method: 'GET', url: '/not/found' }
       }
-      await router[executeS](ctx)
+      await router._execute(ctx)
       expect(isSent).toBe(true)
     })
   })

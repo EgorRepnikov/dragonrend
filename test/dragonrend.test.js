@@ -4,7 +4,7 @@ const rp = require('request-promise').defaults({
   baseUrl: 'http://localhost:8080/'
 })
 
-const { dragonrend, wrap, json } = require('..')
+const { dragonrend } = require('..')
 
 describe('Dragonrend Server', () => {
   describe('default', () => {

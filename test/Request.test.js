@@ -9,8 +9,8 @@ const { dragonrend } = require('..')
 describe('Request', () => {
   const app = dragonrend()
   const { GET, POST } = app
-  GET('/test', ({ request, response }) => response.json(request))
-  POST('/test-body', ({ request, response }) => response.json(request))
+  GET('/test', ({ request: { raw, ...request }, response }) => response.json(request))
+  POST('/test-body', ({ request: { raw, ...request }, response }) => response.json(request))
 
   beforeAll(async () => await app.start(8080))
   afterAll(async () => await app.stop())
