@@ -4,24 +4,24 @@ describe('Router', () => {
   const handler = ctx => ctx.test = true
 
   describe('define route with prefix and execute', () => {
-    const router = routing({ prefix: '/api' }).GET('/test', handler)
+    const router = routing({ prefix: '/api' }).get('/test', handler)
     it('GET /api/test', () => {
       const ctx = {
         request: { method: 'GET', path: '/api/test' },
         test: false
       }
-      router._execute(ctx)[0](ctx)
+      router._find(ctx)[0](ctx)
       expect(ctx.test).toBe(true)
     })
   })
   describe('execute handler by route', () => {
-    const router = routing().GET('/test', handler)
+    const router = routing().get('/test', handler)
     it('GET /test', async () => {
       const ctx = {
         request: { method: 'GET', path: '/test' },
         test: false
       }
-      router._execute(ctx)[0](ctx)
+      router._find(ctx)[0](ctx)
       expect(ctx.test).toEqual(true)
     })
   })
@@ -36,7 +36,7 @@ describe('Router', () => {
       const ctx = {
         request: { method: 'GET', path: '/not/found' }
       }
-      await router._execute(ctx)
+      await router._find(ctx)[0](ctx)
       expect(isSent).toBe(true)
     })
   })
@@ -51,7 +51,7 @@ describe('Router', () => {
       const ctx = {
         request: { method: 'GET', path: '/not/found' }
       }
-      await router._execute(ctx)
+      await router._find(ctx)[0](ctx)
       expect(isSent).toBe(true)
     })
   })
