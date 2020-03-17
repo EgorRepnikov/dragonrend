@@ -4,23 +4,23 @@ const rp = require('request-promise').defaults({
   baseUrl: 'http://localhost:8080/'
 })
 
-const { dragonrend, wrap, json, text, html } = require('..')
+const { dragonrend, returnable, json, text, html } = require('..')
 
 describe('Return Response', () => {
   const app = dragonrend()
   const { GET } = app
   GET('/default', () => {})
-  GET('/status', wrap(() => ({
+  GET('/status', returnable(() => ({
     status: 201,
     headers: {
       'content-type': 'text/plain'
     },
     body: ''
   })))
-  GET('/json-body', wrap(() => json({ message: 'test' })))
-  GET('/text-body', wrap(() => text('test')))
-  GET('/html-body', wrap(() => html('<h1>test</h1>')))
-  GET('/status-json-body', wrap(() => json(201, { message: 'test' })))
+  GET('/json-body', returnable(() => json({ message: 'test' })))
+  GET('/text-body', returnable(() => text('test')))
+  GET('/html-body', returnable(() => html('<h1>test</h1>')))
+  GET('/status-json-body', returnable(() => json(201, { message: 'test' })))
 
   beforeAll(async () => await app.start(8080))
   afterAll(async () => await app.stop())
