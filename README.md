@@ -148,6 +148,24 @@ MIDDLEWARE(
 )
 ```
 
+To break/stop middleware chain you should return `false`.
+
+```js
+const { MIDDLEWARE } = app
+
+MIDDLEWARE(ctx => {
+  return false
+})
+
+MIDDLEWARE(async ctx => {
+  return false
+})
+
+MIDDLEWARE(ctx => {
+  return Promise.resolve(false)
+})
+```
+
 > **Feature:** Middleware-functions can be added to the application automatically. Read more in the section "Auto Including".
 
 ### setErrorHandler(fn: Function)
@@ -316,11 +334,12 @@ Fields of Request instance:
 | url | url from request |
 | method | request's method |
 | body | parsed request's body |
+| raw | native Node.js's http Request |
 | rawBody | no parsed request's body |
 
 ```js
 app.middleware(ctx => {
-  const { headers, url, method, body, rawBody } = ctx
+  const { headers, url, method, body, raw, rawBody } = ctx
 }
 ```
 
@@ -335,6 +354,7 @@ Response objects is added to `context` by default.
 | text(data: String) | Sends response with `text/plain` body |
 | html(data: String) | Sends response with `text/html` body |
 | send(data: String\|Buffer, contentType: String) | Sends response with custom body |
+| raw | Native Node.js' http Response |
 
 ```js
 app.middleware({ response } => {
@@ -353,16 +373,18 @@ app.middleware({ response } => {
 ```
 
 ## Return Response
-In any function, whether it is Middleware or NotFound-handler, you can return an object with a response.
+It is possible to return response in middleware function by using `returnable` wrapper-function.
 
 ```js
-app.middleware(async ctx => {
+const { returnable } = require('dragonrend')
+
+app.middleware(returnable(ctx => {
   return {
     status: 201 // default: 200,
     headers: { 'content-type': 'text/plain' } // default: {},
     body: 'body' // default: ''
   }
-})
+}))
 ```
 
 ### Response helper-functions
@@ -377,15 +399,15 @@ Functions have three call options.
 | json(status, headers, body) | three parameters are status, headers and body in this order |
 
 ```js
-const { dragonrend, json, html, text } = require('dragonrend')
+const { dragonrend, returnable, json, html, text } = require('dragonrend')
 
 const { GET } = dragonrend()
 
-GET('/json', ctx => json({ message: 'Hi There' }))
+GET('/json', returnable(ctx => json({ message: 'Hi There' })))
 
-GET('/html', ctx => html(201, '<p>Hi There</p>'))
+GET('/html', returnable(ctx => html(201, '<p>Hi There</p>')))
 
-GET('/text', ctx => text(201, { 'header': 'value' }, 'Hi There'))
+GET('/text', returnable(ctx => text(201, { 'header': 'value' }, 'Hi There')))
 ```
 
 ## Auto Including
