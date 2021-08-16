@@ -1,38 +1,44 @@
-const { reduce } = require('../lib/utils')
+const { compose } = require('../lib/utils')
 
 describe('Utils', () => {
-  describe('reduce function', () => {
-    it('reduce 3 functions', async () => {
+  describe('compose function', () => {
+    it('compose 3 functions', async () => {
       let counter = 0
-      const fns = reduce([
-        () => counter++,
-        () => counter++,
+      const fns = compose([
+        (_, next) => {
+          counter++
+          return next()
+        },
+        (_, next) => {
+          counter++
+          return next()
+        },
         () => counter++
       ], {})
-      await fns
+      await fns()
       expect(counter).toEqual(3)
     })
     it('stop on second fn', async () => {
       let counter = 0
-      const fns = reduce([
-        () => counter++,
-        () => {
+      const fns = compose([
+        (_, next) => {
           counter++
-          return false
+          next()
         },
         () => counter++,
+        () => counter++,
       ], {})
-      await fns
+      await fns()
       expect(counter).toEqual(2)
     })
     it('catch error in promises chain', async () => {
       let counter = 0
-      const fns = reduce([
+      const fns = compose([
         () => { throw new Error('Error') },
         () => counter++
       ], {})
       try {
-        await fns
+        await fns()
       } catch (e) {
         expect(e.message).toEqual('Error')
       }
