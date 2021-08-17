@@ -36,7 +36,7 @@ describe('Router', () => {
       const ctx = {
         request: { method: 'GET', path: '/not/found' }
       }
-      await router._find(ctx)[0](ctx)
+      await router._find(ctx)(ctx)
       expect(isSent).toBe(true)
     })
   })
@@ -51,7 +51,7 @@ describe('Router', () => {
       const ctx = {
         request: { method: 'GET', path: '/not/found' }
       }
-      await router._find(ctx)[0](ctx)
+      await router._find(ctx)(ctx)
       expect(isSent).toBe(true)
     })
   })
