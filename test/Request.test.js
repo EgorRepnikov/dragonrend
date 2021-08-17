@@ -27,7 +27,7 @@ describe('Request', () => {
         connection: 'close'
       },
       path: '/test',
-      query: {}
+      _query: false
     })
   })
   it('get request with json body', async () => {
@@ -47,7 +47,7 @@ describe('Request', () => {
         connection: 'close'
       },
       path: '/test-body',
-      query: {},
+      _query: false,
       body: { message: 'Test' }
     })
   })
@@ -65,7 +65,7 @@ describe('Request', () => {
         connection: 'close'
       },
       path: '/test-body',
-      query: {},
+      _query: false,
       body: 'Test'
     })
   })
