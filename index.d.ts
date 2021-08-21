@@ -1,91 +1,123 @@
-import { Router } from "./lib/routing"
+import * as http from 'http'
 
-type Middleware = <Context>(ctx: Context, next?: () => Promise<any>) => any
+export type Object = { [key: string]: any }
 
-type Object = { [key: any]: any }
-
-interface RoutingOptions<Context> {
-  prefix?: string,
-  notFoundHandler?: (ctx: Context) => any,
+export interface DragonrendRequest {
+  headers: Object
+  url: string
+  method: string
+  raw: http.ClientRequest
+  path: string
+  query(): Promise<Object>
+  body(): Promise<any>
 }
 
-interface Dragonrend<Context> {
+export interface DragonrendResponse {
 
-  MIDDLEWARE: (...fns: Middleware[]) => Dragonrend
+  raw: http.ServerResponse
 
-  CONTEXT: (object: Object) => Dragonrend
+  header(key: string, value: string): DragonrendResponse
 
-  PARSER: (contentType: string, handler: (body: string) => any) => Dragonrend
+  status(statusCode: number): DragonrendResponse
 
-  CATCH_ERROR: (handler: (error: any, ctx: Context) => any) => Dragonrend
+  json(data: string): DragonrendResponse
+
+  text(data: string): DragonrendResponse
+
+  html(data: string): DragonrendResponse
+
+  send(data?: string): DragonrendResponse
+}
+
+export interface BaseContext {
+  request: DragonrendRequest
+  response: DragonrendResponse
+}
+
+export type Middleware = <Context extends BaseContext>(ctx: Context, next?: () => Promise<any>) => any
+
+export interface RoutingOptions<Context extends BaseContext> {
+  prefix?: string
+  notFoundHandler?: (ctx: Context) => any
+}
+
+export interface Dragonrend<Context extends BaseContext> {
+
+  MIDDLEWARE: (...fns: Middleware[]) => Dragonrend<Context>
+
+  CONTEXT: (ctx: Partial<Context>) => Dragonrend<Context>
+
+  PARSER: (contentType: string, handler: (body: string) => any) => Dragonrend<Context>
+
+  CATCH_ERROR: (handler: (error: any, ctx: Context) => any) => Dragonrend<Context>
 
   START: (portOrOptions: number | Object, cb?: (err: any) => any) => void
 
   STOP: (cb?: () => any) => Promise<any> | void
 
-  middleware(...fns: Middleware[]): Dragonrend
+  middleware(...fns: Middleware[]): Dragonrend<Context>
 
-  context(object: Object): Dragonrend
+  context(ctx: Partial<Context>): Dragonrend<Context>
 
-  addContentTypeParser(contentType: string, handler: (body: string) => any): Dragonrend
+  addContentTypeParser(contentType: string, handler: (body: string) => any): Dragonrend<Context>
 
-  setErrorHandler(handler: (error: any, ctx: Context) => any): Dragonrend
+  setErrorHandler(handler: (error: any, ctx: Context) => any): Dragonrend<Context>
 
   start(portOrOptions: number | Object, cb?: (err: any) => any): void
 
   stop(cb?: () => any): Promise<any> | void
 }
 
-interface Router<Context> {
+interface Router<Context extends BaseContext> {
 
-  GET: (path: string, ...handlers: Middleware[]) => Router
+  GET: (path: string, ...handlers: Middleware[]) => Router<Context>
 
-  POST: (path: string, ...handlers: Middleware[]) => Router
+  POST: (path: string, ...handlers: Middleware[]) => Router<Context>
 
-  PUT: (path: string, ...handlers: Middleware[]) => Router
+  PUT: (path: string, ...handlers: Middleware[]) => Router<Context>
 
-  PATCH: (path: string, ...handlers: Middleware[]) => Router
+  PATCH: (path: string, ...handlers: Middleware[]) => Router<Context>
 
-  HEAD: (path: string, ...handlers: Middleware[]) => Router
+  HEAD: (path: string, ...handlers: Middleware[]) => Router<Context>
 
-  OPTIONS: (path: string, ...handlers: Middleware[]) => Router
+  OPTIONS: (path: string, ...handlers: Middleware[]) => Router<Context>
 
-  DELETE: (path: string, ...handlers: Middleware[]) => Router
+  DELETE: (path: string, ...handlers: Middleware[]) => Router<Context>
 
-  MERGE: (...routers: Router[]) => Router
+  MERGE: (...routers: Router<Context>[]) => Router<Context>
 
-  NOT_FOUND: (handler: (ctx: Context) => any) => Router
+  NOT_FOUND: (handler: (ctx: Context) => any) => Router<Context>
 
-  get(path: string, ...handlers: Middleware[]): Router
+  get(path: string, ...handlers: Middleware[]): Router<Context>
 
-  post(path: string, ...handlers: Middleware[]): Router
+  post(path: string, ...handlers: Middleware[]): Router<Context>
 
-  put(path: string, ...handlers: Middleware[]): Router
+  put(path: string, ...handlers: Middleware[]): Router<Context>
 
-  patch(path: string, ...handlers: Middleware[]): Router
+  patch(path: string, ...handlers: Middleware[]): Router<Context>
 
-  head(path: string, ...handlers: Middleware[]): Router
+  head(path: string, ...handlers: Middleware[]): Router<Context>
 
-  options(path: string, ...handlers: Middleware[]): Router
+  options(path: string, ...handlers: Middleware[]): Router<Context>
 
-  delete(path: string, ...handlers: Middleware[]): Router
+  delete(path: string, ...handlers: Middleware[]): Router<Context>
 
-  merge(...routers: Router[]): Router
+  merge(...routers: Router<Context>[]): Router<Context>
 
-  setNotFoundHandler(handler: (ctx: Context) => any): Router
+  setNotFoundHandler(handler: (ctx: Context) => any): Router<Context>
 }
 
-export function dragonrend<Context>(options?: {
-  server?: boolean = false,
-  https?: boolean = false,
-  http2?: boolean = false,
-  noDelay?: boolean = false,
-  routing?: RoutingOptions = {},
-  autoIncluding?: boolean = false,
+export function dragonrend<Context extends BaseContext>(options?: {
+  server?: boolean,
+  https?: boolean,
+  http2?: boolean,
+  noDelay?: boolean,
+  routing?: RoutingOptions<Context>,
+  autoIncluding?: boolean,
   errorHandler?: (e: any, ctx: Context) => any,
-}): Dragonrend
+}): Dragonrend<Context>
 
-export function routing(options?: RoutingOptions): Router
+export function routing<Context extends BaseContext>(options?: RoutingOptions<Context>): Router<Context>
 
 export function json(body: Object)
 export function json(status: number, body: Object)
