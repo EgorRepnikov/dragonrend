@@ -1,15 +1,15 @@
 import { Router } from "./lib/routing"
 
-type Middleware = (ctx: any, next?: () => Promise<any>) => any
+type Middleware = <Context>(ctx: Context, next?: () => Promise<any>) => any
 
 type Object = { [key: any]: any }
 
-interface RoutingOptions {
+interface RoutingOptions<Context> {
   prefix?: string,
-  notFoundHandler?: (ctx: any) => any,
+  notFoundHandler?: (ctx: Context) => any,
 }
 
-interface Dragonrend {
+interface Dragonrend<Context> {
 
   MIDDLEWARE: (...fns: Middleware[]) => Dragonrend
 
@@ -17,7 +17,7 @@ interface Dragonrend {
 
   PARSER: (contentType: string, handler: (body: string) => any) => Dragonrend
 
-  CATCH_ERROR: (handler: (error: any, ctx: any) => any) => Dragonrend
+  CATCH_ERROR: (handler: (error: any, ctx: Context) => any) => Dragonrend
 
   START: (portOrOptions: number | Object, cb?: (err: any) => any) => void
 
@@ -29,14 +29,14 @@ interface Dragonrend {
 
   addContentTypeParser(contentType: string, handler: (body: string) => any): Dragonrend
 
-  setErrorHandler(handler: (error: any, ctx: any) => any): Dragonrend
+  setErrorHandler(handler: (error: any, ctx: Context) => any): Dragonrend
 
   start(portOrOptions: number | Object, cb?: (err: any) => any): void
 
   stop(cb?: () => any): Promise<any> | void
 }
 
-interface Router {
+interface Router<Context> {
 
   GET: (path: string, ...handlers: Middleware[]) => Router
 
@@ -54,7 +54,7 @@ interface Router {
 
   MERGE: (...routers: Router[]) => Router
 
-  NOT_FOUND: (handler: (ctx: any) => any) => Router
+  NOT_FOUND: (handler: (ctx: Context) => any) => Router
 
   get(path: string, ...handlers: Middleware[]): Router
 
@@ -72,17 +72,17 @@ interface Router {
 
   merge(...routers: Router[]): Router
 
-  setNotFoundHandler(handler: (ctx: any) => any): Router
+  setNotFoundHandler(handler: (ctx: Context) => any): Router
 }
 
-export function dragonrend(options?: {
+export function dragonrend<Context>(options?: {
   server?: boolean = false,
   https?: boolean = false,
   http2?: boolean = false,
   noDelay?: boolean = false,
   routing?: RoutingOptions = {},
   autoIncluding?: boolean = false,
-  errorHandler?: (e: any, ctx: any) => any,
+  errorHandler?: (e: any, ctx: Context) => any,
 }): Dragonrend
 
 export function routing(options?: RoutingOptions): Router
