@@ -9,7 +9,6 @@ const { dragonrend } = require('..')
 describe('Response', () => {
   const app = dragonrend()
   const { GET } = app
-  GET('/default', () => {})
   GET('/status', ({ response }) => response.status(201).text(''))
   GET('/json-body', ({ response }) => response.json({ message: 'test' }))
   GET('/text-body', ({ response }) => response.text('test'))
@@ -20,12 +19,6 @@ describe('Response', () => {
   beforeAll(async () => await app.start(8080))
   afterAll(async () => await app.stop())
 
-  it('get default response', async () => {
-    const res = await rp.get('default')
-    expect(res.statusCode).toEqual(200)
-    expect(res.headers['content-type']).toEqual('text/plain')
-    expect(res.body).toEqual('OK')
-  })
   it('get response with custom status', async () => {
     const res = await rp.get('status')
     expect(res.statusCode).toEqual(201)

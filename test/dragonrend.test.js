@@ -22,9 +22,11 @@ describe('Dragonrend Server', () => {
       expect(res.body).toEqual('Not Found')
     })
     it('GET /default', async () => {
-      const res = await rp('default')
-      expect(res.statusCode).toEqual(200)
-      expect(res.body).toEqual('OK')
+      try {
+        await rp('default', { timeout: 100 })
+      } catch(e) {
+        expect(e.message).toEqual('Error: ESOCKETTIMEDOUT')
+      }
     })
     it('GET /error', async () => {
       const res = await rp('error')
