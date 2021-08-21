@@ -10,7 +10,10 @@ describe('Request', () => {
   const app = dragonrend()
   const { GET, POST } = app
   GET('/test', ({ request: { raw, ...request }, response }) => response.json(request))
-  POST('/test-body', ({ request: { raw, ...request }, response }) => response.json(request))
+  POST('/test-body', async ({ request: { raw, ...request }, response }) => {
+    await request.body()
+    response.json(request)
+  })
 
   beforeAll(async () => await app.start(8080))
   afterAll(async () => await app.stop())
@@ -27,7 +30,8 @@ describe('Request', () => {
         connection: 'close'
       },
       path: '/test',
-      query: {}
+      _query: false,
+      _body: false
     })
   })
   it('get request with json body', async () => {
@@ -47,8 +51,8 @@ describe('Request', () => {
         connection: 'close'
       },
       path: '/test-body',
-      query: {},
-      body: { message: 'Test' }
+      _query: false,
+      _body: { message: 'Test' }
     })
   })
   it('get request with text body', async () => {
@@ -65,8 +69,8 @@ describe('Request', () => {
         connection: 'close'
       },
       path: '/test-body',
-      query: {},
-      body: 'Test'
+      _query: false,
+      _body: 'Test'
     })
   })
 })
