@@ -5,7 +5,7 @@
 # Dragonrend
 Dragonrend is productive and fast Node.js framework for building web applications.
 
-All these advantages are achieved due to the fact that there is nothing superfluous. You have only what it is needed for creating Backend apps - no more no less. Then you get easy to read code and a speed comparable to bare Node.
+All these advantages are achieved due to the fact that there is nothing superfluous. You have only what it is needed for creating Backend apps - no more no less. Then you get easy to read code and performance close to bare Node.
 
 # Installation
 ```bash
@@ -13,7 +13,7 @@ $ npm install dragonrend
 ```
 
 # Usage
-The framework supports two options for writing code: classic and new. А new way allows you to create programs due to the extracted functions. This method helps to split the code into blocks that are easier to read. And in the following examples both design options will be shown.
+The framework supports two options for writing code: classic and new way. А new way allows you to create programs due to the extracted functions. This method helps to split the code into blocks that are easier to read. And in the following examples both design options will be shown.
 
 ```js
 const { dragonrend } = require('dragonrend')
@@ -335,11 +335,12 @@ Fields of Request instance:
 | method | request's method |
 | body | parsed request's body |
 | raw | native Node.js's http Request |
-| rawBody | no parsed request's body |
 
 ```js
-app.middleware(ctx => {
-  const { headers, url, method, body, raw, rawBody } = ctx
+app.middleware(async ctx => {
+  const { headers, url, method, raw, query } = ctx.request
+  const query = await ctx.request.query() // lazy parsed query
+  const body = await ctx.request.body() // lazy parsed body
 }
 ```
 
